@@ -13,7 +13,7 @@ function _find_gcclibdir()
 end
 
 function _find_gcclibdir_in_system()
-  for v in [6,7,8]
+  for v in [5,6,7,8,9]
     gcclibdir = "/usr/lib/gcc/x86_64-linux-gnu/$v"
     if isdir(gcclibdir)
       l = Libdl.find_library(joinpath(gcclibdir,"libgomp"))

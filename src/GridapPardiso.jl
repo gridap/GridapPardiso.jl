@@ -23,7 +23,7 @@ deps_jl = joinpath(@__DIR__, "..", "deps", "deps.jl")
 
 if !isfile(deps_jl)
   s = """
-  Package PardisoBindings not installed properly.
+  Package GridapPardiso not installed properly.
   """
   error(s)
 end

@@ -1,7 +1,6 @@
 module GridapPardiso
 
 using Libdl
-using LinearAlgebra
 using SparseArrays
 
 import Gridap: LinearSolver, numerical_setup, NumericalSetup, solve, solve!, symbolic_setup, SymbolicSetup

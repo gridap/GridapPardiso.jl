@@ -1,6 +1,12 @@
 module GridapPardiso
 
 using Libdl
+using LinearAlgebra
+using SparseArrays
+
+import Gridap: LinearSolver, numerical_setup, NumericalSetup, solve, solve!, symbolic_setup, SymbolicSetup
+
+export PardisoSolver
 
 export new_pardiso_handle
 export new_iparm
@@ -58,5 +64,8 @@ end
 include("constructors.jl")
 
 include("bindings.jl")
+
+include("LinearSolver.jl")
+
 
 end # module

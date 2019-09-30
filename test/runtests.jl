@@ -5,7 +5,7 @@ using SparseArrays
 
 # Define linear system
 
-mtype = 11
+mtype = GridapPardiso.MatrixTypes["Real_NonSymmetric"]
 
 A = sparse([
   0. -2  3 0
@@ -107,7 +107,7 @@ err = pardiso_64!(
 A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
 b = ones(A.n)
 x = similar(b)
-ps = PardisoSolver(11, new_iparm(), 1)
+ps = PardisoSolver(GridapPardiso.MatrixTypes["Real_NonSymmetric"], new_iparm(), 1)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)

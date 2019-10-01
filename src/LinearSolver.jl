@@ -27,7 +27,7 @@ mutable struct PardisoNumericalSetup{T,Ti} <: NumericalSetup
     solver :: PardisoSolver
 end
 
-PardisoSolver() = PardisoSolver(MatrixTypes["Real_NonSymmetric"], new_iparm(), 0, new_pardiso_handle())
+PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 0, new_pardiso_handle())
 PardisoSolver(mtype) = PardisoSolver(mtype, new_iparm(), 0, new_pardiso_handle())
 PardisoSolver(mtype, iparm) = PardisoSolver(mtype, iparm, 0, new_pardiso_handle())
 PardisoSolver(mtype, iparm, msglvl) = PardisoSolver(mtype, iparm, msglvl, new_pardiso_handle())
@@ -63,7 +63,7 @@ function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where
 
     pardisoinit!(ps.pt, ps.mtype, Vector{Int32}(ps.iparm))
 
-    pss = PardisoSymbolicSetup(GridapPardiso.Phase["Analysis"], mat, ps)
+    pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -86,7 +86,7 @@ end
 
 function symbolic_setup_finalize(pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int32}
 
-    pss.phase = GridapPardiso.Phase["ReleaseAllInternalMemory"]
+    pss.phase = GridapPardiso.PHASE_RELEASE_ALL_INTERNAL_MEMORY
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -108,7 +108,7 @@ end
 
 function symbolic_setup_finalize(pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int64}
 
-    pss.phase = GridapPardiso.Phase["ReleaseAllInternalMemory"]
+    pss.phase = GridapPardiso.PHASE_RELEASE_ALL_INTERNAL_MEMORY
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -132,7 +132,7 @@ numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {
 
 function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-    pns = PardisoNumericalSetup(GridapPardiso.Phase["NumericalFactorization"], mat, pss.solver)
+    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
 
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -155,7 +155,7 @@ end
 
 function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 
-    pns = PardisoNumericalSetup(GridapPardiso.Phase["NumericalFactorization"], mat, pss.solver)
+    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
 
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -178,7 +178,7 @@ end
 
 function numerical_setup_finalize(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
 
-    pns.phase = GridapPardiso.Phase["ReleaseInternalMemory"]
+    pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -200,7 +200,7 @@ end
 
 function numerical_setup_finalize(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
 
-    pns.phase = GridapPardiso.Phase["ReleaseInternalMemory"]
+    pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -222,7 +222,7 @@ end
 
 function solve!(x::AbstractVector{T}, ns::PardisoNumericalSetup{T,Ti}, b::AbstractVector{T}) where {T<:Float64,Ti<:Int32}
 
-    phase  = GridapPardiso.Phase["SolveIterativeRefinement"]
+    phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
     err = pardiso!( ns.solver.pt,                 # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
@@ -245,9 +245,9 @@ end
 
 function solve!(x::AbstractVector{T}, ns::PardisoNumericalSetup{T,Ti}, b::AbstractVector{T}) where {T<:Float64,Ti<:Int64}
 
-    phase  = GridapPardiso.Phase["SolveIterativeRefinement"]
+    phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
-    err = pardiso_64!( ns.solver.pt,                 # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
+    err = pardiso_64!( ns.solver.pt,              # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     ns.solver.mtype,              # Defines the matrix type, which influences the pivoting method

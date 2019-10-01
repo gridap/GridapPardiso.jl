@@ -5,7 +5,7 @@ using SparseArrays
 
 # Define linear system
 
-mtype = GridapPardiso.MatrixType["RealNonSymmetric"]
+mtype = GridapPardiso.MTYPE_REAL_NON_SYMMETRIC
 
 A = sparse([
   0. -2  3 0
@@ -33,7 +33,7 @@ pardisoinit!(pt,mtype,iparm)
 
 maxfct = 1
 mnum = 1
-phase = 13
+phase = GridapPardiso.PHASE_ANALYSIS_NUMERICAL_FACTORIZATION_SOLVE_ITERATIVE_REFINEMENT
 a = A.nzval
 ia = Vector{Int32}(A.colptr)
 ja = Vector{Int32}(A.rowval)
@@ -106,7 +106,7 @@ err = pardiso_64!(
 A = sparse(Vector{Int32}([1,2,3,4,5]),Vector{Int32}([1,2,3,4,5]),Vector{Float64}([1.0,2.0,3.0,4.0,5.0]))
 b = ones(A.n)
 x = similar(b)
-ps = PardisoSolver(GridapPardiso.MatrixType["RealNonSymmetric"], new_iparm(), 1)
+ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 1)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)
@@ -116,7 +116,7 @@ solve!(x, ns, b)
 A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
 b = ones(A.n)
 x = similar(b)
-ps = PardisoSolver(GridapPardiso.MatrixType["RealNonSymmetric"], new_iparm_64(), 1)
+ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm_64(), 1)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)

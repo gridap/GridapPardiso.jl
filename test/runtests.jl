@@ -5,7 +5,7 @@ using SparseArrays
 
 # Define linear system
 
-mtype = GridapPardiso.MatrixTypes["Real_NonSymmetric"]
+mtype = GridapPardiso.MatrixType["RealNonSymmetric"]
 
 A = sparse([
   0. -2  3 0
@@ -102,14 +102,24 @@ err = pardiso_64!(
 
 @test maximum(abs.(A'*x-b)) < tol
 
+# pardiso! (solving the transpose of the system above)
+A = sparse(Vector{Int32}([1,2,3,4,5]),Vector{Int32}([1,2,3,4,5]),Vector{Float64}([1.0,2.0,3.0,4.0,5.0]))
+b = ones(A.n)
+x = similar(b)
+ps = PardisoSolver(GridapPardiso.MatrixType["RealNonSymmetric"], new_iparm(), 1)
+ss = symbolic_setup(ps, A)
+ns = numerical_setup(ss, A)
+solve!(x, ns, b)
+@test maximum(abs.(A'*x-b)) < tol
 
 # pardiso_64! (solving the transpose of the system above)
 A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
 b = ones(A.n)
 x = similar(b)
-ps = PardisoSolver(GridapPardiso.MatrixTypes["Real_NonSymmetric"], new_iparm(), 1)
+ps = PardisoSolver(GridapPardiso.MatrixType["RealNonSymmetric"], new_iparm_64(), 1)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)
 @test maximum(abs.(A'*x-b)) < tol
+
 

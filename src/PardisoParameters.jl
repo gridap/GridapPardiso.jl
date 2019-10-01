@@ -5,16 +5,16 @@
 # This scalar value defines the matrix type. PARDISO supports the following matrices
 
 # Real matrices
-MatrixTypes = Base.ImmutableDict(             "Real_StructurallySymmetric"        => 1)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Real_SymmetricPositiveDefinite"    => 2)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Real_SymmetricIndefinite"          => -2)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Real_NonSymmetric"                 => 11)
+MatrixType = Base.ImmutableDict(            "RealStructurallySymmetric"        => 1)
+MatrixType = Base.ImmutableDict(MatrixType, "RealSymmetricPositiveDefinite"    => 2)
+MatrixType = Base.ImmutableDict(MatrixType, "RealSymmetricIndefinite"          => -2)
+MatrixType = Base.ImmutableDict(MatrixType, "RealNonSymmetric"                 => 11)
 # Complex matrices
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_StructurallySymmetric"     => 3)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_HermitianPositiveDefinite" => 4)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_HermitianIndefinite"       => -4)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_Symmetric"                 => 6)
-MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_NonSymmetric"              => 13)
+MatrixType = Base.ImmutableDict(MatrixType, "ComplexStructurallySymmetric"     => 3)
+MatrixType = Base.ImmutableDict(MatrixType, "ComplexHermitianPositiveDefinite" => 4)
+MatrixType = Base.ImmutableDict(MatrixType, "ComplexHermitianIndefinite"       => -4)
+MatrixType = Base.ImmutableDict(MatrixType, "ComplexSymmetric"                 => 6)
+MatrixType = Base.ImmutableDict(MatrixType, "ComplexNonSymmetric"              => 13)
 
 
 # PHASE: Controls the execution of the solver
@@ -28,18 +28,18 @@ MatrixTypes = Base.ImmutableDict(MatrixTypes, "Complex_NonSymmetric"            
 #             This phase can be divided into two or three separate substitutions: forward, backward, and diagonal.
 # 4. Termination and Memory Release Phase (PHASE ≤ 0)
 
-Phases = Base.ImmutableDict(        "Analysis"                                               => 11)
-Phases = Base.ImmutableDict(Phases, "AnalysisNumericalFactorization"                         => 12)
-Phases = Base.ImmutableDict(Phases, "AnalysisNumericalFactorizationSolveIterativeRefinement" => 13)
-Phases = Base.ImmutableDict(Phases, "NumericalFactorization"                                 => 22)
-Phases = Base.ImmutableDict(Phases, "SelectedInversion"                                      => -22)
-Phases = Base.ImmutableDict(Phases, "NumericalFactorizationSolveIterativeRefinement"         => 23)
-Phases = Base.ImmutableDict(Phases, "SolveIterativeRefinement"                               => 33)
-Phases = Base.ImmutableDict(Phases, "SolveIterativeRefinement_ForwardSubstitution"           => 331)
-Phases = Base.ImmutableDict(Phases, "SolveIterativeRefinement_DiagonalSubstitution"          => 332)
-Phases = Base.ImmutableDict(Phases, "SolveIterativeRefinement_BackwardSubstitution"          => 333)
-Phases = Base.ImmutableDict(Phases, "ReleaseInternalMemory"                                  => 0)
-Phases = Base.ImmutableDict(Phases, "ReleaseAllInternalMemory"                               => -1)
+Phase = Base.ImmutableDict(       "Analysis"                                               => 11)
+Phase = Base.ImmutableDict(Phase, "AnalysisNumericalFactorization"                         => 12)
+Phase = Base.ImmutableDict(Phase, "AnalysisNumericalFactorizationSolveIterativeRefinement" => 13)
+Phase = Base.ImmutableDict(Phase, "NumericalFactorization"                                 => 22)
+Phase = Base.ImmutableDict(Phase, "SelectedInversion"                                      => -22)
+Phase = Base.ImmutableDict(Phase, "NumericalFactorizationSolveIterativeRefinement"         => 23)
+Phase = Base.ImmutableDict(Phase, "SolveIterativeRefinement"                               => 33)
+Phase = Base.ImmutableDict(Phase, "SolveIterativeRefinement_ForwardSubstitution"           => 331)
+Phase = Base.ImmutableDict(Phase, "SolveIterativeRefinement_DiagonalSubstitution"          => 332)
+Phase = Base.ImmutableDict(Phase, "SolveIterativeRefinement_BackwardSubstitution"          => 333)
+Phase = Base.ImmutableDict(Phase, "ReleaseInternalMemory"                                  => 0)
+Phase = Base.ImmutableDict(Phase, "ReleaseAllInternalMemory"                               => -1)
 
 
 function pardiso_report_error(code::Int)

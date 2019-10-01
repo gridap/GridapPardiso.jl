@@ -64,6 +64,8 @@ include("constructors.jl")
 
 include("bindings.jl")
 
+include("PardisoParameters.jl")
+
 include("LinearSolver.jl")
 
 

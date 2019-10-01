@@ -13,7 +13,7 @@ addons:
     update: true
     packages:
     - gcc
-    - intel-mkl-64bit-2019.3-062
+    - intel-mkl-64bit-2019.5-075
 before_script:
   - if [ `getconf LONG_BIT` = "64" ];then source /opt/intel/mkl/bin/mklvars.sh intel64; else source /opt/intel/mkl/bin/mklvars.sh ia32; fi
 matrix:

@@ -38,7 +38,7 @@ function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where
 
     pardisoinit!(ps.pt, ps.mtype, ps.iparm)
 
-    pss = PardisoSymbolicSetup(GridapPardiso.Phase["Analysis"], mat, ps)
+    pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time

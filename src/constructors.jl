@@ -1,7 +1,7 @@
 
-new_pardiso_handle() = zeros(Int,64)
+new_pardiso_handle() = zeros(Int, 64)
 
-new_iparm() = zeros(Int32,64)
+new_iparm(::AbstractSparseMatrix{T, Ti}) where {T, Ti} = zeros(Ti, 64)
 
-new_iparm_64() = zeros(Int64,64)
+new_iparm() = new_iparm(SparseMatrixCSC())
 

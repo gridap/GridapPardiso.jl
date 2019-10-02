@@ -25,7 +25,7 @@ pt = new_pardiso_handle()
 
 # pardisoinit!
 
-iparm = new_iparm()
+iparm = Vector{Int32}(new_iparm())
 
 pardisoinit!(pt,mtype,iparm)
 
@@ -83,24 +83,26 @@ err = pardiso_getdiag!(pt,df,da,mnum)
 
 @test err == 0
 
-# pardiso_64! (solving the transpose of the system above)
 
-pt = new_pardiso_handle()
+if Int == Int64
+    # pardiso_64! (solving the transpose of the system above)
+    pt = new_pardiso_handle()
 
-a = A.nzval
-ia = A.colptr
-ja = A.rowval
-perm = zeros(Int64,n)
-iparm = new_iparm_64()
+    a = A.nzval
+    ia = A.colptr
+    ja = A.rowval
+    perm = zeros(Int64,n)
+    iparm = Vector{Int64}(new_iparm())
 
-err = pardiso_64!(
-  pt,maxfct,mnum,mtype,phase,n,a,ia,ja,perm,nrhs,iparm,msglvl,b,x) 
+    err = pardiso_64!(
+      pt,maxfct,mnum,mtype,phase,n,a,ia,ja,perm,nrhs,iparm,msglvl,b,x) 
 
-@test err == 0
+    @test err == 0
 
-# pardiso_64! (solving the transpose of the system above)
+    # pardiso_64! (solving the transpose of the system above)
 
-@test maximum(abs.(A'*x-b)) < tol
+    @test maximum(abs.(A'*x-b)) < tol
+end
 
 # pardiso! (solving the transpose of the system above)
 A = sparse(Vector{Int32}([1,2,3,4,5]),Vector{Int32}([1,2,3,4,5]),Vector{Float64}([1.0,2.0,3.0,4.0,5.0]))
@@ -113,15 +115,16 @@ solve!(x, ns, b)
 @test maximum(abs.(A'*x-b)) < tol
 test_linear_solver(ps, A, b, x)
 
-# pardiso_64! (solving the transpose of the system above)
-A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
-b = ones(A.n)
-x = similar(b)
-ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), 1)
-ss = symbolic_setup(ps, A)
-ns = numerical_setup(ss, A)
-solve!(x, ns, b)
-@test maximum(abs.(A'*x-b)) < tol
-test_linear_solver(ps, A, b, x)
-
+if Int == Int64
+    # pardiso_64! (solving the transpose of the system above)
+    A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
+    b = ones(A.n)
+    x = similar(b)
+    ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), 1)
+    ss = symbolic_setup(ps, A)
+    ns = numerical_setup(ss, A)
+    solve!(x, ns, b)
+    @test maximum(abs.(A'*x-b)) < tol
+    test_linear_solver(ps, A, b, x)
+end
 

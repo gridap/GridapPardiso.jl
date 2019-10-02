@@ -217,7 +217,7 @@ numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {
     function numerical_setup!(ns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 Gridap numerical_setup! overload.
 """
-numerical_setup!(ns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32} = mat
+numerical_setup!(ns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer} = mat
 
 """
     numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}

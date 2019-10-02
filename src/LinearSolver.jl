@@ -9,10 +9,27 @@ mnum   = 1 # Actual matrix for the solution phase. The value must be: 1 <= mnum 
 nrhs   = 1 # Number of right-hand sides that need to be solved for
 
 struct PardisoSolver{Ti} <: LinearSolver
-  mtype  :: Int
-  iparm  :: Vector{Ti} 
-  msglvl :: Int
-  pt     :: Vector{Int}
+    mtype  :: Int
+    iparm  :: Vector{Ti} 
+    msglvl :: Int
+    pt     :: Vector{Int}
+
+    function PardisoSolver(mtype::Int, iparm::Vector{Ti}, msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
+        @assert length(iparm) == length(pt) == 64
+        @assert mtype in (  MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                    MTYPE_REAL_SYMMETRIC_POSITIVE_DEFINITE,
+                    MTYPE_REAL_SYMMETRIC_INDEFINITE,
+                    MTYPE_REAL_NON_SYMMETRIC,
+                    MTYPE_COMPLEX_STRUCTURALLY_SYMMETRIC,
+                    MTYPE_COMPLEX_HERMITIAN_POSITIVE_DEFINITE,
+                    MTYPE_COMPLEX_HERMITIAN_INDEFINITE,
+                    MTYPE_COMPLEX_SYMMETRIC,
+                    MTYPE_COMPLEX_NON_SYMMETRIC
+                )
+        tmpiparm = Vector{Int32}(iparm)
+        pardisoinit!(pt, mtype, tmpiparm)
+        new{Ti}(Int(mtype), Vector{Ti}(tmpiparm), Int(msglvl), pt)
+    end
 end
 
 mutable struct PardisoSymbolicSetup{T,Ti} <: SymbolicSetup 
@@ -36,8 +53,6 @@ symbolic_setup(ps::PardisoSolver{Ti}, mat::AbstractMatrix{T}) where {T<:Float64,
 
 function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-    pardisoinit!(ps.pt, ps.mtype, ps.iparm)
-
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -60,8 +75,6 @@ function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where
 end
 
 function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
-
-    pardisoinit!(ps.pt, ps.mtype, Vector{Int32}(ps.iparm))
 
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 

@@ -111,6 +111,7 @@ ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)
 @test maximum(abs.(A'*x-b)) < tol
+test_linear_solver(ps, A, b, x)
 
 # pardiso_64! (solving the transpose of the system above)
 A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
@@ -121,5 +122,6 @@ ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)
 @test maximum(abs.(A'*x-b)) < tol
+test_linear_solver(ps, A, b, x)
 
 

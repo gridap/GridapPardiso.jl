@@ -71,7 +71,8 @@ PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 0, new_pa
     function PardisoSolver(mtype)
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type.
-"""PardisoSolver(mtype) = PardisoSolver(mtype, new_iparm(), 0, new_pardiso_handle())
+"""
+PardisoSolver(mtype) = PardisoSolver(mtype, new_iparm(), 0, new_pardiso_handle())
 
 """
     function PardisoSolver(mtype, iparm)

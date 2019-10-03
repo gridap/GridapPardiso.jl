@@ -9,7 +9,7 @@
 
 ## Usage
 
-´´´julia
+```julia
 julia> using Gridap
 julia> using GridapPardiso
 julia> A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
@@ -19,7 +19,7 @@ julia> ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), 
 julia> ss = symbolic_setup(ps, A)
 julia> ns = numerical_setup(ss, A)
 julia> solve!(x, ns, b)
-´´´
+```
 
 ## Notes
 

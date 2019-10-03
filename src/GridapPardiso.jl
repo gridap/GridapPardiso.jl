@@ -3,12 +3,14 @@ module GridapPardiso
 using Libdl
 using SparseArrays
 
+#@fverdugo: Intenta respetar column width = 80
 import Gridap: LinearSolver, numerical_setup, numerical_setup!, NumericalSetup, solve, solve!, symbolic_setup, SymbolicSetup
 
 export PardisoSolver
 
 export new_pardiso_handle
 export new_iparm
+#@fverdugo: has eliminado el new_iparm_64?
 export new_iparm_64
 export pardiso_data_type
 export pardisoinit!

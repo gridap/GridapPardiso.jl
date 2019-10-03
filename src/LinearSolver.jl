@@ -1,3 +1,6 @@
+#@fverdugo: intenta respetar column width = 80
+#@fverdugo: nosotros indentamos con 2 espacios (no con 4)
+
 """
 Wrapper of the MKL Pardiso solver available in julia
 """
@@ -13,7 +16,7 @@ Official Intel Pardiso MKL documentation:
 https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface
 """
 struct PardisoSolver{Ti} <: LinearSolver
-    mtype  :: Int
+    mtype  :: Int #@fverdugo: no intentes alinear codigo verticalmente, es muy difícil de mantener cuando se hace renamings
     iparm  :: Vector{Ti} 
     msglvl :: Int
     pt     :: Vector{Int}
@@ -65,7 +68,7 @@ end
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver.
 """
-PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 0, new_pardiso_handle())
+PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 0, new_pardiso_handle())#@fverdugo: 0 es un "magic" number
 
 """
     function PardisoSolver(mtype)

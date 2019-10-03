@@ -41,7 +41,7 @@ const PHASE_SOLVE_ITERATIVE_REFINEMENT                                  = 33
 const PHASE_SOLVE_ITERATIVE_REFINEMENT_FORWARD_SUBSTITUTION             = 331
 const PHASE_SOLVE_ITERATIVE_REFINEMENT_DIAGONAL_SUBSTITUTION            = 332
 const PHASE_SOLVE_ITERATIVE_REFINEMENT_BACKWARD_SUBSTITUTION            = 333
-const PHASE_RELEASE_INTERNAL_MEMORY                                     = 0
+const PHASE_RELEASE_INTERNAL_MEMORY                                     = 0 #@fverdugo cual queremos nosotros? release, o release all?
 const PHASE_RELEASE_ALL_INTERNAL_MEMORY                                 = -1
 
 

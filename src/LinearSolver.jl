@@ -207,27 +207,12 @@ function symbolic_setup_finalize(pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:I
 end
 
 """
-    function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer}
-Gridap numerical_setup overload.
-Converts any input `AbstractMatrix{T}` in `SparseMatrixCSC{T,Ti}` and calls `numerical_setup(ps::PardisoSymbolicSetup{Ti}, mat::SparseMatrixCSC{T,Ti})`.
-"""
-numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = numerical_setup(pss, SparseMatrixCSC{T,Ti}(mat))
-
-"""
-    function numerical_setup!(ns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
-Gridap numerical_setup! overload.
-"""
-numerical_setup!(ns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer} = mat
-
-"""
-    numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
+    numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 Gridap numerical_setup overload.
 Use Intel Pardiso MKL to perform the numerical factorization phase.
 """
-function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
-
+function numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -244,18 +229,15 @@ function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T
                     Vector{T}(),                  # Array, size (n, nrhs). On entry, contains the right-hand side vector/matrix
                     Vector{T}())                  # Array, size (n, nrhs). If iparm(6)=0 it contains solution vector/matrix X
     pardiso_report_error(err)
-    return finalizer(numerical_setup_finalize, pns)
+    return finalizer(numerical_setup_finalize!, pns)
 end
 
 """
-    function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
+    function numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 Gridap numerical_setup overload.
 Use Intel Pardiso MKL to perform the numerical factorization phase.
 """
-function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
-
-    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
-
+function numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -272,7 +254,7 @@ function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T
                     Vector{T}(),                  # Array, size (n, nrhs). On entry, contains the right-hand side vector/matrix
                     Vector{T}())                  # Array, size (n, nrhs). If iparm(6)=0 it contains solution vector/matrix X
     pardiso_report_error(err)
-    return finalizer(numerical_setup_finalize, pns)
+    return finalizer(numerical_setup_finalize!, pns)
 end
 
 """
@@ -280,7 +262,7 @@ end
 Finalization of `PardisoNumericalSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function numerical_setup_finalize(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
+function numerical_setup_finalize!(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -307,7 +289,7 @@ end
 Finalization of `PardisoNumericalSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function numerical_setup_finalize(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
+function numerical_setup_finalize!(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -327,6 +309,23 @@ function numerical_setup_finalize(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti
                     Vector{T}(),                  # Array, size (n, nrhs). On entry, contains the right-hand side vector/matrix
                     Vector{T}())                  # Array, size (n, nrhs). If iparm(6)=0 it contains solution vector/matrix X
     pardiso_report_error(err)
+end
+
+"""
+    function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer}
+Gridap numerical_setup overload.
+Converts any input `AbstractMatrix{T}` in `SparseMatrixCSC{T,Ti}` and calls `numerical_setup(ps::PardisoSymbolicSetup{Ti}, mat::SparseMatrixCSC{T,Ti})`.
+"""
+numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = numerical_setup(pss, SparseMatrixCSC{T,Ti}(mat))
+
+"""
+    function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer}
+Gridap numerical_setup overload.
+Create the PardisoSymbolicSetup object and use Intel Pardiso MKL to perform the numerical factorization phase.
+"""
+function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer}
+    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
+    return numerical_setup!(pns, mat)
 end
 
 """

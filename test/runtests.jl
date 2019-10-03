@@ -128,3 +128,7 @@ if Int == Int64
     test_linear_solver(ps, A, b, x)
 end
 
+
+@testset "FEM driver" begin include("femdriver.jl") end
+
+

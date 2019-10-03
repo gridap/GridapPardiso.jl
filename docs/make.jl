@@ -8,7 +8,7 @@ makedocs(;
     ],
     repo="https://github.com/gridap/GridapPardiso.jl/blob/{commit}{path}#L{line}",
     sitename="GridapPardiso.jl",
-    authors="Víctor Sande Veiga, Large Scale Scientific Computing",
+    authors=["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Víctor Sande <vsande@cimne.upc.edu>"],
     assets=String[],
 )
 

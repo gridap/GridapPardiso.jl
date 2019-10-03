@@ -1,6 +1,6 @@
 name = "GridapPardiso"
 uuid = "34aa2546-dee6-11e9-014e-739fa02ec06f"
-authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Víctor Sande <vsande@cimne.upd.edu>"]
+authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Víctor Sande <vsande@cimne.upc.edu>"]
 version = "0.1.0"
 
 [deps]

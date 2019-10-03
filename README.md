@@ -10,16 +10,16 @@
 ## Usage
 
 ```julia
-julia> using Gridap
-julia> using GridapPardiso
-julia> A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
-julia> b = ones(A.n)
-julia> x = similar(b)
-julia> msglvl = 1
-julia> ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), msglvl)
-julia> ss = symbolic_setup(ps, A)
-julia> ns = numerical_setup(ss, A)
-julia> solve!(x, ns, b)
+using Gridap
+using GridapPardiso
+A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
+b = ones(A.n)
+x = similar(b)
+msglvl = 1
+ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), msglvl)
+ss = symbolic_setup(ps, A)
+ns = numerical_setup(ss, A)
+solve!(x, ns, b)
 ```
 
 ## Notes

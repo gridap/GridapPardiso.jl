@@ -1,6 +1,3 @@
-#@fverdugo: intenta respetar column width = 80
-#@fverdugo: nosotros indentamos con 2 espacios (no con 4)
-
 """
 Wrapper of the MKL Pardiso solver available in julia
 """
@@ -125,6 +122,8 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
+    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -155,6 +154,8 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 
+    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -240,6 +241,9 @@ Use Intel Pardiso MKL to perform the numerical factorization phase.
 function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
+
+    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -267,6 +271,9 @@ Use Intel Pardiso MKL to perform the numerical factorization phase.
 function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
+
+    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 

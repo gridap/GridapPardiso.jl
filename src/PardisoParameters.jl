@@ -94,6 +94,14 @@ function pardiso_report_error(code::Int)
 end
 
 ###############################################################
+# Parameter values for IPARM[12] 
+# IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED
+###############################################################
+const PARDISO_SOLVE_LINEAR_SYSTEM               = 0 # linear system.
+const PARDISO_SOLVE_CONJUGATE_TRANSPOSED_SYSTEM = 1 # conjugate transposed system
+const PARDISO_SOLVE_TRANSPOSED_SYSTEM           = 2 # transposed system
+
+###############################################################
 # Iparm parameters
 #
 # [I] -> input 

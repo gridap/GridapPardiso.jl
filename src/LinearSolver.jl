@@ -18,9 +18,9 @@ https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardi
 """
 struct PardisoSolver{Ti} <: LinearSolver
   mtype     :: Int
+  iparm     :: Vector{Ti} 
   msglvl    :: Int
   pt        :: Vector{Int}
-  iparm     :: Vector{Ti} 
 
 """
     function PardisoSolver(mtype::Int, iparm::Vector{Ti}, msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
@@ -376,15 +376,15 @@ function solve!(
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
     # Here we assume that the users defines iparm for CSR matrix
-    iparmcopy = copy(pss.solver.iparm)
-    if pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
+    iparmcopy = copy(ns.solver.iparm)
+    if ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
         iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
-    elseif pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
+    elseif ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
         iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_LINEAR_SYSTEM
     else
         error(string("GridapPardiso Error: iparm[",
                     IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED,"] = ",
-                    pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
+                    ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
                     " not supported."))
     end
 
@@ -420,15 +420,15 @@ function solve!(
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
     # Here we assume that the users defines iparm for CSR matrix
-    iparmcopy = copy(pss.solver.iparm)
-    if pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
+    iparmcopy = copy(ns.solver.iparm)
+    if ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
         iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
-    elseif pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
+    elseif ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
         iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_LINEAR_SYSTEM
     else
         error(string("GridapPardiso Error: iparm[",
                     IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED,"] = ",
-                    pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
+                    ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
                     " not supported."))
     end
 

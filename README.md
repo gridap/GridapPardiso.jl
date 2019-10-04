@@ -7,6 +7,51 @@
 
 [Gridap](https://github.com/gridap/Gridap.jl) (Grid-based approximation of partial differential equations in Julia) plugin to use the [Intel Pardiso MKL direct sparse solver](https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface).
 
+## Installation
+
+**GridPardiso** itself is installed when you add and use it into another project.
+
+Please, ensure that your system fulfill the requirements.
+
+To include into your project form Julia REPL, use the following commands:
+
+```
+pkg> add GridapPardiso
+julia> using GridapPardiso
+```
+
+If, for any reason, you need to manually build the project, write down the following commands in Julia REPL:
+```
+pkg> add GridapPardiso
+pkg> build GridPardiso
+julia> using GridapPardiso
+```
+
+### Requirements
+
+- `MKLROOT` environment variable must be set pointing to the MKL installation root directory.
+- `gcc` compiler must be installed and accessible in your system.
+- `OpenMP` library (`libgomp1` in linux OS) must be installed and accesible in your system.
+
+**GridapPardiso** relies on [Intel Pardiso MKL direct sparse solver](https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface). So, you need it in order to be able to use **GridPardiso**.
+
+[Intel MKL](https://software.intel.com/en-us/mkl) includes `/opt/intel/mkl/bin/mklvars.sh` script to setup the correct environment to use it. We strongly recommend to run this script as follows:
+
+```
+$ source /opt/intel/mkl/bin/mklvars.sh intel64
+```
+
+This script setup the `MKLROOT` environment variable required by **GridapPardiso** to build it correctly.
+
+In addition, please make sure that [OpenMP](https://www.openmp.org/) is installed. We use the default distribution package that is installed together with `GCC` compilers in Linux environments.
+
+To fullfil this requirements, in a debian-based OS, we recommend install the following packages:
+
+```
+$ apt-get update
+$ apt-get install -y gcc ligomp1
+```
+
 ## Usage
 
 ```julia

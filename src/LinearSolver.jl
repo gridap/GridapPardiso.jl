@@ -17,10 +17,10 @@ Official Intel Pardiso MKL documentation:
 https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface
 """
 struct PardisoSolver{Ti} <: LinearSolver
-  mtype  :: Int
-  iparm  :: Vector{Ti} 
-  msglvl :: Int
-  pt     :: Vector{Int}
+  mtype     :: Int
+  msglvl    :: Int
+  pt        :: Vector{Int}
+  iparm     :: Vector{Ti} 
 
 """
     function PardisoSolver(mtype::Int, iparm::Vector{Ti}, msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
@@ -122,8 +122,6 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
-            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -154,8 +152,6 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 
-    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
-            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -242,8 +238,6 @@ function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
-            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -272,8 +266,6 @@ function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 
-    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
-            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -383,6 +375,19 @@ function solve!(
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
+    # Here we assume that the users defines iparm for CSR matrix
+    iparmcopy = copy(pss.solver.iparm)
+    if pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
+        iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
+    elseif pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
+        iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_LINEAR_SYSTEM
+    else
+        error(string("GridapPardiso Error: iparm[",
+                    IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED,"] = ",
+                    pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
+                    " not supported."))
+    end
+
     err = pardiso!( ns.solver.pt,                 # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -394,7 +399,7 @@ function solve!(
                     ns.mat.rowval,                # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
-                    ns.solver.iparm,              # This array is used to pass various parameters to Intel MKL PARDISO 
+                    iparmcopy,                    # This array is used to pass various parameters to Intel MKL PARDISO 
                     ns.solver.msglvl,             # Message level information
                     b,                            # Array, size (n, nrhs). On entry, contains the right-hand side vector/matrix
                     x)                            # Array, size (n, nrhs). If iparm(6)=0 it contains solution vector/matrix X
@@ -414,6 +419,19 @@ function solve!(
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
+    # Here we assume that the users defines iparm for CSR matrix
+    iparmcopy = copy(pss.solver.iparm)
+    if pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
+        iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
+    elseif pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
+        iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_LINEAR_SYSTEM
+    else
+        error(string("GridapPardiso Error: iparm[",
+                    IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED,"] = ",
+                    pss.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED],
+                    " not supported."))
+    end
+
     err = pardiso_64!( ns.solver.pt,              # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -425,7 +443,7 @@ function solve!(
                     ns.mat.rowval,                # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
-                    ns.solver.iparm,              # This array is used to pass various parameters to Intel MKL PARDISO 
+                    iparmcopy,                    # This array is used to pass various parameters to Intel MKL PARDISO 
                     ns.solver.msglvl,             # Message level information
                     b,                            # Array, size (n, nrhs). On entry, contains the right-hand side vector/matrix
                     x)                            # Array, size (n, nrhs). If iparm(6)=0 it contains solution vector/matrix X

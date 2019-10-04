@@ -2,9 +2,13 @@
 Wrapper of the MKL Pardiso solver available in julia
 """
 
-const maxfct = 1 # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
-const mnum   = 1 # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
-const nrhs   = 1 # Number of right-hand sides that need to be solved for
+# Maximum number of factors with identical sparsity structure
+# that must be kept in memory at the same time
+const maxfct = 1 
+# Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
+const mnum   = 1 
+# Number of right-hand sides that need to be solved for
+const nrhs   = 1 
 
 """
     struct PardisoSolver{Ti} <: LinearSolver
@@ -13,31 +17,35 @@ Official Intel Pardiso MKL documentation:
 https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface
 """
 struct PardisoSolver{Ti} <: LinearSolver
-    mtype  :: Int
-    iparm  :: Vector{Ti} 
-    msglvl :: Int
-    pt     :: Vector{Int}
+  mtype  :: Int
+  iparm  :: Vector{Ti} 
+  msglvl :: Int
+  pt     :: Vector{Int}
 
 """
     function PardisoSolver(mtype::Int, iparm::Vector{Ti}, msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
 PardisoSolver inner constructor.
 """
-    function PardisoSolver(mtype::Int, iparm::Vector{Ti}, msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
-        @assert length(iparm) == length(pt) == 64
-        @assert mtype in (  MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
-                    MTYPE_REAL_SYMMETRIC_POSITIVE_DEFINITE,
-                    MTYPE_REAL_SYMMETRIC_INDEFINITE,
-                    MTYPE_REAL_NON_SYMMETRIC,
-                    MTYPE_COMPLEX_STRUCTURALLY_SYMMETRIC,
-                    MTYPE_COMPLEX_HERMITIAN_POSITIVE_DEFINITE,
-                    MTYPE_COMPLEX_HERMITIAN_INDEFINITE,
-                    MTYPE_COMPLEX_SYMMETRIC,
-                    MTYPE_COMPLEX_NON_SYMMETRIC
-                )
-        tmpiparm = Vector{Int32}(iparm)
-        pardisoinit!(pt, mtype, tmpiparm)
-        new{Ti}(Int(mtype), Vector{Ti}(tmpiparm), Int(msglvl), pt)
-    end
+  function PardisoSolver(
+                mtype::Int, 
+                iparm::Vector{Ti}, 
+                msglvl::Int, pt:: Vector{Int}) where {Ti<:Integer}
+
+    @assert length(iparm) == length(pt) == 64
+    @assert mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                      MTYPE_REAL_SYMMETRIC_POSITIVE_DEFINITE,
+                      MTYPE_REAL_SYMMETRIC_INDEFINITE,
+                      MTYPE_REAL_NON_SYMMETRIC,
+                      MTYPE_COMPLEX_STRUCTURALLY_SYMMETRIC,
+                      MTYPE_COMPLEX_HERMITIAN_POSITIVE_DEFINITE,
+                      MTYPE_COMPLEX_HERMITIAN_INDEFINITE,
+                      MTYPE_COMPLEX_SYMMETRIC,
+                      MTYPE_COMPLEX_NON_SYMMETRIC
+                    )
+    tmpiparm = Vector{Int32}(iparm)
+    pardisoinit!(pt, mtype, tmpiparm)
+    new{Ti}(Int(mtype), Vector{Ti}(tmpiparm), Int(msglvl), pt)
+  end
 end
 
 """
@@ -65,44 +73,57 @@ end
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver.
 """
-PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, new_iparm(), 0, new_pardiso_handle())
+PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC, 
+                                new_iparm(), 
+                                MSGLVL_QUIET, 
+                                new_pardiso_handle())
 
 """
     function PardisoSolver(mtype)
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type.
 """
-PardisoSolver(mtype) = PardisoSolver(mtype, new_iparm(), 0, new_pardiso_handle())
+PardisoSolver(mtype) = 
+    PardisoSolver(mtype, new_iparm(), MSGLVL_QUIET, new_pardiso_handle())
 
 """
     function PardisoSolver(mtype, iparm)
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type and Pardiso parameters.
 """
-PardisoSolver(mtype, iparm) = PardisoSolver(mtype, iparm, 0, new_pardiso_handle())
+PardisoSolver(mtype, iparm) = 
+    PardisoSolver(mtype, iparm, MSGLVL_QUIET, new_pardiso_handle())
 
 """
     functionPardisoSolver(mtype, iparm, msglvl)
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type, Pardiso parameters and verbosity.
 """
-PardisoSolver(mtype, iparm, msglvl) = PardisoSolver(mtype, iparm, msglvl, new_pardiso_handle())
-
+PardisoSolver(mtype, iparm, msglvl) = 
+    PardisoSolver(mtype, iparm, msglvl, new_pardiso_handle())
 
 """
     function symbolic_setup(ps::PardisoSolver{Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer}
 Gridap symbolic_setup overload.
-Converts any input `AbstractMatrix{T}` in `SparseMatrixCSC{T,Ti}` and calls `symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti})`.
+Converts any input `AbstractMatrix{T}` in `SparseMatrixCSC{T,Ti}` 
+and calls `symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti})`.
 """
-symbolic_setup(ps::PardisoSolver{Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = symbolic_setup(ps, SparseMatrixCSC{T,Ti}(mat))
+symbolic_setup(
+            ps::PardisoSolver{Ti}, 
+            mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = 
+    symbolic_setup(ps, SparseMatrixCSC{T,Ti}(mat))
 
 """
     function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 Gridap symbolic_setup overload.
 Use Intel Pardiso MKL to perform the analisys phase.
 """
-function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
+function symbolic_setup(
+        ps::PardisoSolver{Ti}, 
+        mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
+    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -129,8 +150,12 @@ end
 Gridap symbolic_setup overload.
 Use Intel Pardiso MKL to perform the analisys phase.
 """
-function symbolic_setup(ps::PardisoSolver{Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
+function symbolic_setup(
+        ps::PardisoSolver{Ti}, 
+        mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
 
+    ps.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
@@ -157,7 +182,8 @@ end
 Finalization of `PardisoSymbolicSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function symbolic_setup_finalize(pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int32}
+function symbolic_setup_finalize(
+        pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int32}
 
     pss.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -184,7 +210,8 @@ end
 Finalization of `PardisoSymbolicSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function symbolic_setup_finalize(pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int64}
+function symbolic_setup_finalize(
+        pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int64}
 
     pss.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -211,8 +238,12 @@ end
 Gridap numerical_setup overload.
 Use Intel Pardiso MKL to perform the numerical factorization phase.
 """
+function numerical_setup!(
+        pns::PardisoNumericalSetup{T,Ti}, 
+        mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
 
-function numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int32}
+    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -237,7 +268,12 @@ end
 Gridap numerical_setup overload.
 Use Intel Pardiso MKL to perform the numerical factorization phase.
 """
-function numerical_setup!(pns::PardisoNumericalSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
+function numerical_setup!(
+        pns::PardisoNumericalSetup{T,Ti}, 
+        mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Int64}
+
+    @assert pns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == 
+            PARDISO_SOLVE_TRANSPOSED_SYSTEM
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
@@ -262,7 +298,8 @@ end
 Finalization of `PardisoNumericalSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function numerical_setup_finalize!(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
+function numerical_setup_finalize!(
+        pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -289,7 +326,8 @@ end
 Finalization of `PardisoNumericalSetup{T,Ti}` object.
 Release internal Pardiso memory.
 """
-function numerical_setup_finalize!(pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
+function numerical_setup_finalize!(
+        pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
 
@@ -316,14 +354,19 @@ end
 Gridap numerical_setup overload.
 Converts any input `AbstractMatrix{T}` in `SparseMatrixCSC{T,Ti}` and calls `numerical_setup(ps::PardisoSymbolicSetup{Ti}, mat::SparseMatrixCSC{T,Ti})`.
 """
-numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = numerical_setup(pss, SparseMatrixCSC{T,Ti}(mat))
+numerical_setup(
+        pss::PardisoSymbolicSetup{T,Ti}, 
+        mat::AbstractMatrix{T}) where {T<:Float64,Ti<:Integer} = 
+    numerical_setup(pss, SparseMatrixCSC{T,Ti}(mat))
 
 """
     function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer}
 Gridap numerical_setup overload.
 Create the PardisoSymbolicSetup object and use Intel Pardiso MKL to perform the numerical factorization phase.
 """
-function numerical_setup(pss::PardisoSymbolicSetup{T,Ti}, mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer}
+function numerical_setup(
+        pss::PardisoSymbolicSetup{T,Ti}, 
+        mat::SparseMatrixCSC{T,Ti}) where {T<:Float64,Ti<:Integer}
     pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
     return numerical_setup!(pns, mat)
 end
@@ -333,7 +376,10 @@ end
 Gridap solve! method overload.
 Use Intel Pardiso MKL to perform the solve iterative refinement phase.
 """
-function solve!(x::AbstractVector{T}, ns::PardisoNumericalSetup{T,Ti}, b::AbstractVector{T}) where {T<:Float64,Ti<:Int32}
+function solve!(
+        x::AbstractVector{T}, 
+        ns::PardisoNumericalSetup{T,Ti}, 
+        b::AbstractVector{T}) where {T<:Float64,Ti<:Int32}
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 
@@ -361,7 +407,10 @@ end
 Gridap solve! method overload.
 Use Intel Pardiso MKL to perform the solve iterative refinement phase.
 """
-function solve!(x::AbstractVector{T}, ns::PardisoNumericalSetup{T,Ti}, b::AbstractVector{T}) where {T<:Float64,Ti<:Int64}
+function solve!(
+        x::AbstractVector{T}, 
+        ns::PardisoNumericalSetup{T,Ti}, 
+        b::AbstractVector{T}) where {T<:Float64,Ti<:Int64}
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
 

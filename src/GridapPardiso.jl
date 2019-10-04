@@ -3,13 +3,16 @@ module GridapPardiso
 using Libdl
 using SparseArrays
 
-import Gridap: LinearSolver, numerical_setup, numerical_setup!, NumericalSetup, solve, solve!, symbolic_setup, SymbolicSetup
+
+import Gridap: LinearSolver
+import Gridap: symbolic_setup, SymbolicSetup
+import Gridap: numerical_setup, numerical_setup!, NumericalSetup
+import Gridap: solve, solve!
 
 export PardisoSolver
 
 export new_pardiso_handle
 export new_iparm
-export new_iparm_64
 export pardiso_data_type
 export pardisoinit!
 export pardiso!

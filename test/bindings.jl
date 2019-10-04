@@ -1,3 +1,5 @@
+module bingingstests
+
 using GridapPardiso
 using Test
 using SparseArrays
@@ -101,5 +103,7 @@ if Int == Int64
     # pardiso_64! (solving the transpose of the system above)
 
     @test maximum(abs.(A'*x-b)) < tol
+end
+
 end
 

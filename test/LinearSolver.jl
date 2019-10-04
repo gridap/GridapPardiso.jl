@@ -1,3 +1,5 @@
+module LinearSolverTests
+
 using Gridap
 using GridapPardiso
 using Test
@@ -27,4 +29,6 @@ if Int == Int64
     solve!(x, ns, b)
     @test maximum(abs.(A'*x-b)) < tol
     test_linear_solver(ps, A, b, x)
+end
+
 end

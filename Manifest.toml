@@ -107,9 +107,9 @@ version = "0.10.3"
 
 [[Gridap]]
 deps = ["Combinatorics", "FastGaussQuadrature", "JSON", "LineSearches", "LinearAlgebra", "NLsolve", "QuadGK", "Reexport", "SparseArrays", "StaticArrays", "TensorPolynomialBases", "TensorValues", "Test", "UnstructuredGrids", "WriteVTK"]
-git-tree-sha1 = "fddd1154a86a01082851eebfcbf88362e751bce3"
+git-tree-sha1 = "9655c97fe92523740b5f387c6652657f0708141a"
 uuid = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
-version = "0.5.0"
+version = "0.5.2"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
@@ -281,9 +281,9 @@ version = "0.1.4"
 
 [[TensorValues]]
 deps = ["LinearAlgebra", "StaticArrays"]
-git-tree-sha1 = "a998c534421283d1ad7cec699964600223be5357"
+git-tree-sha1 = "f1f46eea2c9991f7a051d647e37ece33a7d88b78"
 uuid = "31c64edf-cdeb-50e4-845d-ed2334360c20"
-version = "0.3.4"
+version = "0.3.5"
 
 [[Test]]
 deps = ["Distributed", "InteractiveUtils", "Logging", "Random"]

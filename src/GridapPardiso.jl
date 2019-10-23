@@ -2,6 +2,7 @@ module GridapPardiso
 
 using Libdl
 using SparseArrays
+using SparseMatricesCSR
 
 
 import Gridap: LinearSolver

@@ -150,7 +150,7 @@ function PardisoNumericalSetup(phase::Integer,
 end
 
 """
-    function PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoSymbolicSetup constructor overloading.
 Returns a PardisoSymbolicSetup from a given SparseMatrixCSR.
 """
@@ -161,7 +161,7 @@ function PardisoSymbolicSetup(phase::Integer,
 end
 
 """
-    function PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoNumericalSetup constructor overloading.
 Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
 """
@@ -169,6 +169,28 @@ function PardisoNumericalSetup(phase::Integer,
                 mat::SparseMatrixCSR{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
     PardisoNumericalSetup(phase,mat.transpose,solver,false)
+end
+
+"""
+    function PardisoSymbolicSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+PardisoSymbolicSetup constructor overloading.
+Returns a PardisoSymbolicSetup from a given SymSparseMatrixCSR.
+"""
+function PardisoSymbolicSetup(phase::Integer, 
+                mat::SymSparseMatrixCSR{T,Ti}, 
+                solver::PardisoSolver) where {T,Ti}
+    PardisoSymbolicSetup(phase,mat.lowertrian,solver,false)
+end
+
+"""
+    function PardisoNumericalSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+PardisoNumericalSetup constructor overloading.
+Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
+"""
+function PardisoNumericalSetup(phase::Integer, 
+                mat::SymSparseMatrixCSR{T,Ti}, 
+                solver::PardisoSolver) where {T,Ti}
+    PardisoNumericalSetup(phase,mat.lowertrian,solver,false)
 end
 
 """

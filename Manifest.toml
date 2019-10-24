@@ -252,10 +252,10 @@ deps = ["LinearAlgebra", "Random"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[SparseMatricesCSR]]
-deps = ["SparseArrays"]
-git-tree-sha1 = "90165177e093048aff23e1e2d4f34fa3dd6baa80"
+deps = ["LinearAlgebra", "SparseArrays"]
+git-tree-sha1 = "c32c12d65a48919e6c34582ac0be99e4a5faa7a6"
 uuid = "a0a7dd2c-ebf4-11e9-1f05-cf50bc540ca1"
-version = "0.1.0"
+version = "0.3.0"
 
 [[SpecialFunctions]]
 deps = ["BinDeps", "BinaryProvider", "Libdl"]

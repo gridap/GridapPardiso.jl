@@ -106,4 +106,4 @@ $ apt-get install -y gcc ligomp1
 
 ## Notes
 
-Currently **GridapPardiso** only works with `SparseMatrixCSC` matrices. Any other `AbstractMatrix{Float64}` matrix is converted to `SparseMatrixCSC{Float64,Integer}`.
+Currently **GridapPardiso** only works with `SparseMatrixCSC` (from [SparseArrays](https://docs.julialang.org/en/v1/stdlib/SparseArrays/)), `SparseMatrixCSR` and `SymSparseMatrixCSR` (from [SparseMatricesCSR](https://gridap.github.io/SparseMatricesCSR.jl/stable/)) matrices. Any other `AbstractMatrix{Float64}` matrix is converted to `SparseMatrixCSC{Float64,Integer}`.

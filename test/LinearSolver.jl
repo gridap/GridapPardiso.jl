@@ -95,29 +95,14 @@ rows = 5
 cols = 5
 
 # pardiso! 
-I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
-for (ik, jk, vk) in zip(I_,J_,V_)
-    push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
-end
-finalize_coo!(SparseMatrixCSR,I,J,V,rows, cols)
-A = sparsecsr(I,J,V,rows, cols)
-b = ones(size(A)[2])
-x = similar(b)
-ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
-ss = symbolic_setup(ps, A)
-ns = numerical_setup(ss, A)
-solve!(x, ns, b)
-@test maximum(abs.(A*x-b)) < tol
-test_linear_solver(ps, A, b, x)
 
-if Int == Int64
-    # pardiso_64!
-    I = Vector{Int64}(); J = Vector{Int64}(); V = Vector{Float64}()
+for Bi in (0,1)
+    I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
     for (ik, jk, vk) in zip(I_,J_,V_)
         push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
     end
-    finalize_coo!(SparseMatrixCSR,I,J,V,rows, cols)
-    A = sparsecsr(I,J,V,rows, cols)
+    finalize_coo!(SparseMatrixCSR,I,J,V,rows,cols)
+    A = sparsecsr(SparseMatrixCSR{Bi},I,J,V,rows,cols)
     b = ones(size(A)[2])
     x = similar(b)
     ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
@@ -126,6 +111,24 @@ if Int == Int64
     solve!(x, ns, b)
     @test maximum(abs.(A*x-b)) < tol
     test_linear_solver(ps, A, b, x)
+
+    if Int == Int64
+        # pardiso_64!
+        I = Vector{Int64}(); J = Vector{Int64}(); V = Vector{Float64}()
+        for (ik, jk, vk) in zip(I_,J_,V_)
+            push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
+        end
+        finalize_coo!(SparseMatrixCSR,I,J,V,rows,cols)
+        A = sparsecsr(SparseMatrixCSR{Bi},I,J,V,rows,cols)
+        b = ones(size(A)[2])
+        x = similar(b)
+        ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
+        ss = symbolic_setup(ps, A)
+        ns = numerical_setup(ss, A)
+        solve!(x, ns, b)
+        @test maximum(abs.(A*x-b)) < tol
+        test_linear_solver(ps, A, b, x)
+    end
 end
 
 #####################################################
@@ -159,29 +162,14 @@ rows = 8
 cols = 8
 
 # pardiso! 
-I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
-for (ik, jk, vk) in zip(I_,J_,V_)
-    push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
-end
-finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
-A = symsparsecsr(I,J,V,rows,cols)
-b = ones(size(A)[2])
-x = similar(b)
-ps = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
-ss = symbolic_setup(ps, A)
-ns = numerical_setup(ss, A)
-solve!(x, ns, b)
-@test maximum(abs.(A*x-b)) < tol
-test_linear_solver(ps, A, b, x)
 
-if Int == Int64
-    # pardiso_64!
-    I = Vector{Int64}(); J = Vector{Int64}(); V = Vector{Float64}()
+for Bi in (0,1)
+    I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
     for (ik, jk, vk) in zip(I_,J_,V_)
         push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
     end
     finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
-    A = symsparsecsr(I,J,V,rows,cols)
+    A = symsparsecsr(SymSparseMatrixCSR{Bi},I,J,V,rows,cols)
     b = ones(size(A)[2])
     x = similar(b)
     ps = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
@@ -190,6 +178,24 @@ if Int == Int64
     solve!(x, ns, b)
     @test maximum(abs.(A*x-b)) < tol
     test_linear_solver(ps, A, b, x)
+
+    if Int == Int64
+        # pardiso_64!
+        I = Vector{Int64}(); J = Vector{Int64}(); V = Vector{Float64}()
+        for (ik, jk, vk) in zip(I_,J_,V_)
+            push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
+        end
+        finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
+        A = symsparsecsr(SymSparseMatrixCSR{Bi},I,J,V,rows,cols)
+        b = ones(size(A)[2])
+        x = similar(b)
+        ps = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
+        ss = symbolic_setup(ps, A)
+        ns = numerical_setup(ss, A)
+        solve!(x, ns, b)
+        @test maximum(abs.(A*x-b)) < tol
+        test_linear_solver(ps, A, b, x)
+    end
 end
 
 end

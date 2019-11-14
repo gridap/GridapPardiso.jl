@@ -102,6 +102,13 @@ const PARDISO_SOLVE_CONJUGATE_TRANSPOSED_SYSTEM = 1 # conjugate transposed syste
 const PARDISO_SOLVE_TRANSPOSED_SYSTEM           = 2 # transposed system
 
 ###############################################################
+# Parameter values for IPARM[35] 
+# IPARM_ONE_OR_ZERO_BASED_INDEXING
+###############################################################
+const PARDISO_ONE_BASED_INDEXING                = 0 # One-based indexing
+const PARDISO_ZERO_BASED_INDEXING               = 1 # Zero-based indexing
+
+###############################################################
 # Iparm parameters
 #
 # [I] -> input 

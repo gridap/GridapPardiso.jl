@@ -54,9 +54,8 @@ Gridap SymbolicSetup implementation for Intel Pardiso MKL solver.
 """
 mutable struct PardisoSymbolicSetup{T,Ti} <: SymbolicSetup 
     phase     :: Int 
-    mat       :: SparseMatrixCSC{T,Ti}
+    mat       :: AbstractSparseMatrix{T,Ti}
     solver    :: PardisoSolver
-    transpose :: Bool
 end
 
 """
@@ -65,9 +64,8 @@ Gridap NumericalSetup implementation for Intel Pardiso MKL solver.
 """
 mutable struct PardisoNumericalSetup{T,Ti} <: NumericalSetup
     phase     :: Int
-    mat       :: SparseMatrixCSC{T,Ti}
+    mat       :: AbstractSparseMatrix{T,Ti}
     solver    :: PardisoSolver
-    transpose :: Bool
 end
 
 """
@@ -106,91 +104,95 @@ PardisoSolver(mtype, iparm, msglvl) =
 
 
 """
-    function PardisoSymbolicSetup(phase::Integer, mat::AbstractSparseMatrix{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoSymbolicSetup(phase::Integer, mat::AbstractSparseMatrix{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoSymbolicSetup constructor overloading with default values.
 Returns a PardisoSymbolicSetup from a given AbstractSparseMatrix.
 """
-function PardisoSymbolicSetup(phase::Integer, 
+function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::AbstractSparseMatrix{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
-    PardisoSymbolicSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver,true)
+    PardisoSymbolicSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver)
 end 
 
 """
-    function PardisoNumericalSetup(phase::Integer, mat::AbstractSparseMatrix{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoNumericalSetup(phase::Integer, mat::AbstractSparseMatrix{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoNumericalSetup constructor overloading with default values.
 Returns a PardisoNumericalSetup from a given AbstractSparseMatrix.
 """
-function PardisoNumericalSetup(phase::Integer, 
+function build_PardisoNumericalSetup(phase::Integer, 
                 mat::AbstractSparseMatrix{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti} 
-    PardisoNumericalSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver,true)
+    PardisoNumericalSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver)
 end
 
 """
-    function PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoSymbolicSetup constructor overloading.
 Returns a PardisoSymbolicSetup from a given SparseMatrixCSC.
 """
-function PardisoSymbolicSetup(phase::Integer, 
+function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::SparseMatrixCSC{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
-    PardisoSymbolicSetup(phase,mat,solver,true)
+    PardisoSymbolicSetup(phase,mat,solver)
 end
 
 """
-    function PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSC{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoNumericalSetup constructor overloading.
 Returns a PardisoNumericalSetup from a given SparseMatrixCSC.
 """
-function PardisoNumericalSetup(phase::Integer, 
+function build_PardisoNumericalSetup(phase::Integer, 
                 mat::SparseMatrixCSC{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
-    PardisoNumericalSetup(phase,mat,solver,true)
+    PardisoNumericalSetup(phase,mat,solver)
 end
 
 """
-    function PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoSymbolicSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoSymbolicSetup constructor overloading.
 Returns a PardisoSymbolicSetup from a given SparseMatrixCSR.
 """
-function PardisoSymbolicSetup(phase::Integer, 
-                mat::SparseMatrixCSR{T,Ti}, 
-                solver::PardisoSolver) where {T,Ti}
-    PardisoSymbolicSetup(phase,mat.transpose,solver,false)
+function build_PardisoSymbolicSetup(phase::Integer, 
+                mat::SparseMatrixCSR{Bi}, 
+                solver::PardisoSolver) where {Bi}
+    solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
+    PardisoSymbolicSetup(phase,mat,solver)
 end
 
 """
-    function PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoNumericalSetup(phase::Integer, mat::SparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoNumericalSetup constructor overloading.
 Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
 """
-function PardisoNumericalSetup(phase::Integer, 
-                mat::SparseMatrixCSR{T,Ti}, 
-                solver::PardisoSolver) where {T,Ti}
-    PardisoNumericalSetup(phase,mat.transpose,solver,false)
+function build_PardisoNumericalSetup(phase::Integer, 
+                mat::SparseMatrixCSR{Bi}, 
+                solver::PardisoSolver) where {Bi}
+    solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
+    PardisoNumericalSetup(phase,mat,solver)
 end
 
 """
-    function PardisoSymbolicSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoSymbolicSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoSymbolicSetup constructor overloading.
 Returns a PardisoSymbolicSetup from a given SymSparseMatrixCSR.
 """
-function PardisoSymbolicSetup(phase::Integer, 
-                mat::SymSparseMatrixCSR{T,Ti}, 
-                solver::PardisoSolver) where {T,Ti}
-    PardisoSymbolicSetup(phase,mat.lowertrian,solver,false)
+function build_PardisoSymbolicSetup(phase::Integer, 
+                mat::SymSparseMatrixCSR{Bi}, 
+                solver::PardisoSolver) where {Bi}
+    solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
+    PardisoSymbolicSetup(phase,mat.uppertrian,solver)
 end
 
 """
-    function PardisoNumericalSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
+    function build_PardisoNumericalSetup(phase::Integer, mat::SymSparseMatrixCSR{T,Ti}, solver::PardisoSolver) where {T,Ti}
 PardisoNumericalSetup constructor overloading.
 Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
 """
-function PardisoNumericalSetup(phase::Integer, 
-                mat::SymSparseMatrixCSR{T,Ti}, 
-                solver::PardisoSolver) where {T,Ti}
-    PardisoNumericalSetup(phase,mat.lowertrian,solver,false)
+function build_PardisoNumericalSetup(phase::Integer, 
+                mat::SymSparseMatrixCSR{Bi}, 
+                solver::PardisoSolver) where {Bi}
+    solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
+    PardisoNumericalSetup(phase,mat.uppertrian,solver)
 end
 
 """
@@ -202,17 +204,18 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::M) where {T<:Float64,Ti<:Int32,M<:AbstractSparseMatrix{T,Ti}}
 
-    pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
+    pss = build_PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
+    m,n = size(pss.mat)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pss.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pss.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pss.mat.n,                    # Number of equations in the sparse linear systems of equations
-                    pss.mat.nzval,                # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    pss.mat.colptr,               # Pointers to columns in CSR format
-                    pss.mat.rowval,               # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(pss.mat),            # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(pss.mat),              # Pointers to columns in CSR format
+                    getindices(pss.mat),          # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     pss.solver.iparm,             # This array is used to pass various parameters to Intel MKL PARDISO 
@@ -232,17 +235,18 @@ function symbolic_setup(
         ps::PardisoSolver{Ti}, 
         mat::M) where {T<:Float64,Ti<:Int64,M<:AbstractSparseMatrix{T,Ti}}
 
-    pss = PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
+    pss = build_PardisoSymbolicSetup(GridapPardiso.PHASE_ANALYSIS, mat, ps)
+    m,n = size(pss.mat)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pss.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pss.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pss.mat.n,                    # Number of equations in the sparse linear systems of equations
-                    pss.mat.nzval,                # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    pss.mat.colptr,               # Pointers to columns in CSR format
-                    pss.mat.rowval,               # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(pss.mat),            # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(pss.mat),              # Pointers to columns in CSR format
+                    getindices(pss.mat),          # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     pss.solver.iparm,             # This array is used to pass various parameters to Intel MKL PARDISO 
@@ -262,13 +266,14 @@ function symbolic_setup_finalize(
         pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int32}
 
     pss.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
+    m,n = size(pss.mat)
 
     err = pardiso!( pss.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pss.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pss.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pss.mat.n,                    # Number of equations in the sparse linear systems of equations
+                    n,                            # Number of equations in the sparse linear systems of equations
                     Vector{T}(),                  # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
                     Vector{Ti}(),                 # Pointers to columns in CSR format
                     Vector{Ti}(),                 # Column indices of the CSR sparse matrix
@@ -290,13 +295,14 @@ function symbolic_setup_finalize(
         pss::PardisoSymbolicSetup{T,Ti}) where {T,Ti<:Int64}
 
     pss.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
+    m,n = size(pss.mat)
 
     err = pardiso_64!( pss.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pss.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pss.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pss.mat.n,                    # Number of equations in the sparse linear systems of equations
+                    n,                            # Number of equations in the sparse linear systems of equations
                     Vector{T}(),                  # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
                     Vector{Ti}(),                 # Pointers to columns in CSR format
                     Vector{Ti}(),                 # Column indices of the CSR sparse matrix
@@ -318,15 +324,17 @@ function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::M) where {T<:Float64,Ti<:Int32,M<:AbstractSparseMatrix{T,Ti}}
 
+    m,n = size(pns.mat)
+
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pns.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pns.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pns.mat.n,                        # Number of equations in the sparse linear systems of equations
-                    pns.mat.nzval,                    # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    pns.mat.colptr,                   # Pointers to columns in CSR format
-                    pns.mat.rowval,                   # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(pns.mat),            # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(pns.mat),              # Pointers to columns in CSR format
+                    getindices(pns.mat),          # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     pns.solver.iparm,             # This array is used to pass various parameters to Intel MKL PARDISO 
@@ -346,15 +354,17 @@ function numerical_setup!(
         pns::PardisoNumericalSetup{T,Ti}, 
         mat::M) where {T<:Float64,Ti<:Int64,M<:AbstractSparseMatrix{T,Ti}}
 
+    m,n = size(pns.mat)
+
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pns.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pns.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pns.mat.n,                        # Number of equations in the sparse linear systems of equations
-                    pns.mat.nzval,                    # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    pns.mat.colptr,                   # Pointers to columns in CSR format
-                    pns.mat.rowval,                   # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(pns.mat),            # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(pns.mat),              # Pointers to columns in CSR format
+                    getindices(pns.mat),          # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     pns.solver.iparm,             # This array is used to pass various parameters to Intel MKL PARDISO 
@@ -374,13 +384,14 @@ function numerical_setup_finalize!(
         pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int32}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
+    m,n = size(pns.mat)
 
     err = pardiso!( pns.solver.pt,                # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pns.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pns.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pns.mat.n,                    # Number of equations in the sparse linear systems of equations
+                    n,                            # Number of equations in the sparse linear systems of equations
                     Vector{T}(),                  # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
                     Vector{Ti}(),                 # Pointers to columns in CSR format
                     Vector{Ti}(),                 # Column indices of the CSR sparse matrix
@@ -402,13 +413,14 @@ function numerical_setup_finalize!(
         pns::PardisoNumericalSetup{T,Ti}) where {T, Ti<:Int64}
 
     pns.phase = GridapPardiso.PHASE_RELEASE_INTERNAL_MEMORY
+    m,n = size(pns.mat)
 
     err = pardiso_64!( pns.solver.pt,             # Handle to internal data structure. The entries must be set to zero prior to the first call to pardiso
                     maxfct,                       # Maximum number of factors with identical sparsity structure that must be kept in memory at the same time
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     pns.solver.mtype,             # Defines the matrix type, which influences the pivoting method
                     pns.phase,                    # Controls the execution of the solver (11 == Analysis)
-                    pns.mat.n,                    # Number of equations in the sparse linear systems of equations
+                    n,                            # Number of equations in the sparse linear systems of equations
                     Vector{T}(),                  # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
                     Vector{Ti}(),                 # Pointers to columns in CSR format
                     Vector{Ti}(),                 # Column indices of the CSR sparse matrix
@@ -429,7 +441,7 @@ Create the PardisoSymbolicSetup object and use Intel Pardiso MKL to perform the 
 function numerical_setup(
         pss::PardisoSymbolicSetup{T,Ti}, 
         mat::M) where {T<:Float64,Ti<:Integer,M<:AbstractSparseMatrix{T,Ti}}
-    pns = PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
+    pns = build_PardisoNumericalSetup(GridapPardiso.PHASE_NUMERICAL_FACTORIZATION, mat, pss.solver)
     return numerical_setup!(pns, mat)
 end
 
@@ -444,10 +456,11 @@ function solve!(
         b::AbstractVector{T}) where {T<:Float64,Ti<:Int32}
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
+    m,n = size(ns.mat)
 
     # Here we assume that the users defines iparm for CSR matrix
     iparmcopy = copy(ns.solver.iparm)
-    if ns.transpose
+    if hascolmajororder(ns.mat)
         if ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
             iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
         elseif ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
@@ -465,10 +478,10 @@ function solve!(
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     ns.solver.mtype,              # Defines the matrix type, which influences the pivoting method
                     phase,                        # Controls the execution of the solver (11 == Analysis)
-                    ns.mat.n,                     # Number of equations in the sparse linear systems of equations
-                    ns.mat.nzval,                 # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    ns.mat.colptr,                # Pointers to columns in CSR format
-                    ns.mat.rowval,                # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(ns.mat),            # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(ns.mat),              # Pointers to columns in CSR format
+                    getindices(ns.mat),          # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     iparmcopy,                    # This array is used to pass various parameters to Intel MKL PARDISO 
@@ -490,10 +503,11 @@ function solve!(
         b::AbstractVector{T}) where {T<:Float64,Ti<:Int64}
 
     phase  = GridapPardiso.PHASE_SOLVE_ITERATIVE_REFINEMENT
+    m,n = size(ns.mat)
 
     # Here we assume that the users defines iparm for CSR matrix
     iparmcopy = copy(ns.solver.iparm)
-    if ns.transpose
+    if hascolmajororder(ns.mat)
         if ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_LINEAR_SYSTEM
             iparmcopy[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] = PARDISO_SOLVE_TRANSPOSED_SYSTEM
         elseif ns.solver.iparm[IPARM_TRANSPOSED_OR_CONJUGATED_TRANSPOSED] == PARDISO_SOLVE_TRANSPOSED_SYSTEM
@@ -511,10 +525,10 @@ function solve!(
                     mnum,                         # Actual matrix for the solution phase. The value must be: 1 <= mnum <= maxfct. 
                     ns.solver.mtype,              # Defines the matrix type, which influences the pivoting method
                     phase,                        # Controls the execution of the solver (11 == Analysis)
-                    ns.mat.n,                     # Number of equations in the sparse linear systems of equations
-                    ns.mat.nzval,                 # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
-                    ns.mat.colptr,                # Pointers to columns in CSR format
-                    ns.mat.rowval,                # Column indices of the CSR sparse matrix
+                    n,                            # Number of equations in the sparse linear systems of equations
+                    nonzeros(ns.mat),             # Contains the non-zero elements of the coefficient matrix A corresponding to the indices in ja
+                    getptr(ns.mat),               # Pointers to columns in CSR format
+                    getindices(ns.mat),           # Column indices of the CSR sparse matrix
                     Vector{Ti}(),                 # Permutation vector 
                     nrhs,                         # Number of right-hand sides that need to be solved for
                     iparmcopy,                    # This array is used to pass various parameters to Intel MKL PARDISO 

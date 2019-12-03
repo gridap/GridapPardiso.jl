@@ -47,21 +47,22 @@ const MKL_PARDISO_LOADED = Ref(false)
 
 function __init__()
 
-  libmkl = load_mkl_gcc(mkllibdir,gcclibdir)
+  if MKL_FOUND 
+    libmkl = load_mkl_gcc(mkllibdir,gcclibdir)
 
-  pardisoinit_sym[] = Libdl.dlsym(libmkl,:pardisoinit)
-  pardiso_sym[] = Libdl.dlsym(libmkl,:pardiso )
-  pardiso_64_sym[] = Libdl.dlsym(libmkl,:pardiso_64 )
-  #pardiso_getenv_sym[] = Libdl.dlsym(libmkl,:pardiso_getenv)
-  #pardiso_setenv_sym[] = Libdl.dlsym(libmkl,:pardiso_setenv)
-  pardiso_getdiag_sym[] = Libdl.dlsym(libmkl,:pardiso_getdiag)
-  #pardiso_export_sym[] = Libdl.dlsym(libmkl,:pardiso_export)
-  #pardiso_handle_store_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_store)
-  #pardiso_handle_restore_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_restore)
-  #pardiso_handle_delete_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_delete)
+    pardisoinit_sym[] = Libdl.dlsym(libmkl,:pardisoinit)
+    pardiso_sym[] = Libdl.dlsym(libmkl,:pardiso )
+    pardiso_64_sym[] = Libdl.dlsym(libmkl,:pardiso_64 )
+    #pardiso_getenv_sym[] = Libdl.dlsym(libmkl,:pardiso_getenv)
+    #pardiso_setenv_sym[] = Libdl.dlsym(libmkl,:pardiso_setenv)
+    pardiso_getdiag_sym[] = Libdl.dlsym(libmkl,:pardiso_getdiag)
+    #pardiso_export_sym[] = Libdl.dlsym(libmkl,:pardiso_export)
+    #pardiso_handle_store_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_store)
+    #pardiso_handle_restore_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_restore)
+    #pardiso_handle_delete_sym[] = Libdl.dlsym(libmkl,:pardiso_handle_delete)
 
-  MKL_PARDISO_LOADED[] = true
-
+    MKL_PARDISO_LOADED[] = true
+  end
 end
 
 include("constructors.jl")

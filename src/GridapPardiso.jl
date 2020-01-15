@@ -2,13 +2,12 @@ module GridapPardiso
 
 using Libdl
 using SparseArrays
-using SparseMatricesCSR
+using Gridap.Algebra
 
-
-import Gridap: LinearSolver
-import Gridap: symbolic_setup, SymbolicSetup
-import Gridap: numerical_setup, numerical_setup!, NumericalSetup
-import Gridap: solve, solve!
+import Gridap.Algebra: LinearSolver
+import Gridap.Algebra: SymbolicSetup, NumericalSetup
+import Gridap.Algebra: symbolic_setup, numerical_setup, numerical_setup!
+import Gridap.Algebra: solve, solve!
 
 export PardisoSolver
 

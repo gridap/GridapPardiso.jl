@@ -58,9 +58,9 @@ version = "2.2.0"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "ef162bfe3d872c326c0ecddeb45e3c13c1b74eda"
+git-tree-sha1 = "b7720de347734f4716d1815b00ce5664ed6bbfd4"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.8"
+version = "0.17.9"
 
 [[Dates]]
 deps = ["Printf"]
@@ -124,13 +124,13 @@ version = "0.8.4"
 
 [[ForwardDiff]]
 deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "NaNMath", "Random", "SpecialFunctions", "StaticArrays"]
-git-tree-sha1 = "840700059391d36e2498d89c2e82c08f261f2a2a"
+git-tree-sha1 = "88b082d492be6b63f967b6c96b352e25ced1a34c"
 uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "0.10.8"
+version = "0.10.9"
 
 [[Gridap]]
 deps = ["BSON", "Combinatorics", "DocStringExtensions", "FastGaussQuadrature", "FileIO", "FillArrays", "JLD2", "JSON", "LineSearches", "LinearAlgebra", "NLsolve", "QuadGK", "Reexport", "SparseArrays", "StaticArrays", "Test", "WriteVTK"]
-git-tree-sha1 = "0d873b62ef5724481ad8fb911d47fc63f2eed674"
+git-tree-sha1 = "7f9eb25aaadcbef3d40a722a782bb3c8004143fa"
 repo-rev = "new_master"
 repo-url = "https://github.com/gridap/Gridap.jl.git"
 uuid = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"

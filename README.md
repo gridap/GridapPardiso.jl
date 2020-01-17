@@ -63,16 +63,14 @@ uh = solve(solver,op)
 
 **GridPardiso** itself is installed when you add and use it into another project.
 
-Please, ensure that your system fulfill the requirements.
-
-To include into your project form Julia REPL, use the following commands:
+First, ensure that your system fulfill the requirements (see instructions below). Only after these steps, to include into your project form Julia REPL, use the following commands:
 
 ```
 pkg> add GridapPardiso
 julia> using GridapPardiso
 ```
 
-If, for any reason, you need to manually build the project, write down the following commands in Julia REPL:
+If, for any reason, you need to manually build the project (e.g., you added the project with the wrong environment resulting a build that fails, you have fixed the environment and want to re-build the project), write down the following commands in Julia REPL:
 ```
 pkg> add GridapPardiso
 pkg> build GridPardiso

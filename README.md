@@ -101,7 +101,7 @@ To fullfil this requirements, in a debian-based OS, we recommend install the fol
 
 ```
 $ apt-get update
-$ apt-get install -y gcc ligomp1
+$ apt-get install -y gcc libgomp1
 ```
 
 ## Notes

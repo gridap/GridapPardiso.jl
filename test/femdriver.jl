@@ -4,39 +4,36 @@ using Test
 using Gridap
 using GridapPardiso
 
-model = CartesianDiscreteModel(
-  domain=(0,1,0,1,0,1), partition=(10,10,10))
+tol = 1e-10
 
-fespace = FESpace(
-  reffe=:Lagrangian, order=1, valuetype=Float64,
-  conformity=:H1, model=model, diritags="boundary")
+model = CartesianDiscreteModel((0,1,0,1,0,1), (10,10,10))
 
-V = TestFESpace(fespace)
-U = TrialFESpace(fespace,0.0)
+V = TestFESpace(reffe=:Lagrangian, order=1, valuetype=Float64,
+  conformity=:H1, model=model, dirichlet_tags="boundary")
 
-trian = Triangulation(model)
-quad = CellQuadrature(trian,degree=2)
+U = TrialFESpace(V)
+
+trian = get_triangulation(model)
+quad = CellQuadrature(trian,2)
 
 t_Ω = AffineFETerm(
   (v,u) -> inner(∇(v),∇(u)),
   (v) -> inner(v, (x) -> x[1]*x[2] ),
   trian, quad)
 
-op = LinearFEOperator(V,U,t_Ω)
+#op = AffineFEOperator(SparseMatrixCSR{0,PetscReal,PetscInt},V,U,t_Ω)
+op = AffineFEOperator(V,U,t_Ω)
 
 ls = PardisoSolver()
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)
 
-x = free_dofs(uh)
-A = op.mat
-b = op.vec
+x = get_free_values(uh)
+A = op.op.matrix
+b = op.op.vector
 
 r = A*x - b
-
-tol = 1e-10
 @test maximum(abs.(r)) < tol
-
 
 end #module

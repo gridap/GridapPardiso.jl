@@ -31,32 +31,28 @@ using GridapPardiso
 # Define the FE problem
 # -Δu = x*y in (0,1)^3, u = 0 on the boundary.
 
-model = CartesianDiscreteModel(
-  domain=(0,1,0,1,0,1), partition=(10,10,10))
+model = CartesianDiscreteModel((0,1,0,1,0,1), (10,10,10))
 
-fespace = FESpace(
-  reffe=:Lagrangian, order=1, valuetype=Float64,
-  conformity=:H1, model=model, diritags="boundary")
+V = TestFESpace(reffe=:Lagrangian, order=1, valuetype=Float64,
+  conformity=:H1, model=model, dirichlet_tags="boundary")
 
-V = TestFESpace(fespace)
-U = TrialFESpace(fespace,0.0)
+U = TrialFESpace(V)
 
-trian = Triangulation(model)
-quad = CellQuadrature(trian,degree=2)
+trian = get_triangulation(model)
+quad = CellQuadrature(trian,2)
 
 t_Ω = AffineFETerm(
   (v,u) -> inner(∇(v),∇(u)),
   (v) -> inner(v, (x) -> x[1]*x[2] ),
   trian, quad)
 
-op = LinearFEOperator(V,U,t_Ω)
+#op = AffineFEOperator(SparseMatrixCSR{0,PetscReal,PetscInt},V,U,t_Ω)
+op = AffineFEOperator(V,U,t_Ω)
 
-# Use Pardiso to solve the problem
-
-ls = PardisoSolver() # Pardiso with default values
+ls = PardisoSolver()
 solver = LinearFESolver(ls)
-uh = solve(solver,op)
 
+uh = solve(solver,op)
 ```
 
 ## Installation
@@ -102,6 +98,3 @@ $ apt-get update
 $ apt-get install -y gcc libgomp1
 ```
 
-## Notes
-
-Currently **GridapPardiso** only works with `SparseMatrixCSC` (from [SparseArrays](https://docs.julialang.org/en/v1/stdlib/SparseArrays/)), `SparseMatrixCSR` and `SymSparseMatrixCSR` (from [SparseMatricesCSR](https://gridap.github.io/SparseMatricesCSR.jl/stable/)) matrices. Any other `AbstractMatrix{Float64}` matrix is converted to `SparseMatrixCSC{Float64,Integer}`.

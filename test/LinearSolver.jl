@@ -1,10 +1,9 @@
 module LinearSolverTests
 
-using Gridap
+using Gridap.Algebra
 using GridapPardiso
 using Test
 using SparseArrays
-using SparseMatricesCSR
 
 tol = 1.0e-13
 

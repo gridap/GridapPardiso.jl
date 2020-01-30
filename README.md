@@ -46,8 +46,7 @@ t_Ω = AffineFETerm(
   (v) -> inner(v, (x) -> x[1]*x[2] ),
   trian, quad)
 
-#op = AffineFEOperator(SparseMatrixCSR{0,PetscReal,PetscInt},V,U,t_Ω)
-op = AffineFEOperator(V,U,t_Ω)
+op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
 
 ls = PardisoSolver()
 solver = LinearFESolver(ls)

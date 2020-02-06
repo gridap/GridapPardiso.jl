@@ -92,8 +92,15 @@ PardisoSolver(::Type{<:AbstractSparseMatrix{Tv,Ti}}) where {Tv,Ti}=
 PardisoSolver(::Type{SymSparseMatrixCSR{Bi,Tv,Ti}}) where {Bi,Tv,Ti}= 
     PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE)
 
-PardisoSolver(op::AffineFEOperator) = 
-    PardisoSolver(typeof(get_matrix(op)))
+PardisoSolver(op::FEOperator) = PardisoSolver(get_matrix_type(op))
+
+function get_matrix_type(op::FEOperator)
+  @abstractmethod
+end
+
+function get_matrix_type(op::AffineFEOperator)
+  typeof(get_matrix(op))
+end
 
 """
     function PardisoSolver(mtype, iparm)

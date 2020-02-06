@@ -4,6 +4,7 @@ using Libdl
 using SparseArrays
 using Gridap.Algebra
 using Gridap.FESpaces
+using Gridap.Helpers
 
 import Gridap.Algebra: LinearSolver
 import Gridap.Algebra: SymbolicSetup, NumericalSetup

@@ -31,7 +31,7 @@ t_Ω = AffineFETerm(
 
 op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
 
-ls = PardisoSolver()
+ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)
@@ -47,7 +47,7 @@ r = A*x - b
 
 op = AffineFEOperator(SymSparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
 
-ls = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE)
+ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)

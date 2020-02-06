@@ -83,15 +83,24 @@ PardisoSolver() = PardisoSolver(MTYPE_REAL_NON_SYMMETRIC,
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type.
 """
-PardisoSolver(mtype) = 
+PardisoSolver(mtype::Int) = 
     PardisoSolver(mtype, new_iparm(), MSGLVL_QUIET, new_pardiso_handle())
+
+PardisoSolver(::Type{<:AbstractSparseMatrix{Tv,Ti}}) where {Tv,Ti}= 
+    PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC)
+
+PardisoSolver(::Type{SymSparseMatrixCSR{Bi,Tv,Ti}}) where {Bi,Tv,Ti}= 
+    PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE)
+
+PardisoSolver(op::AffineFEOperator) = 
+    PardisoSolver(typeof(get_matrix(op)))
 
 """
     function PardisoSolver(mtype, iparm)
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type and Pardiso parameters.
 """
-PardisoSolver(mtype, iparm) = 
+PardisoSolver(mtype::Int, iparm) = 
     PardisoSolver(mtype, iparm, MSGLVL_QUIET, new_pardiso_handle())
 
 """
@@ -99,7 +108,7 @@ PardisoSolver(mtype, iparm) =
 PardisoSolver constructor overloading with default values.
 Returns a PardisoSolver given its matrix type, Pardiso parameters and verbosity.
 """
-PardisoSolver(mtype, iparm, msglvl) = 
+PardisoSolver(mtype::Int, iparm, msglvl) = 
     PardisoSolver(mtype, iparm, msglvl, new_pardiso_handle())
 
 
@@ -111,6 +120,10 @@ Returns a PardisoSymbolicSetup from a given AbstractSparseMatrix.
 function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::AbstractSparseMatrix{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     PardisoSymbolicSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver)
 end 
 
@@ -122,6 +135,10 @@ Returns a PardisoNumericalSetup from a given AbstractSparseMatrix.
 function build_PardisoNumericalSetup(phase::Integer, 
                 mat::AbstractSparseMatrix{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti} 
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     PardisoNumericalSetup(phase,SparseMatrixCSC{T,Ti}(mat),solver)
 end
 
@@ -133,6 +150,10 @@ Returns a PardisoSymbolicSetup from a given SparseMatrixCSC.
 function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::SparseMatrixCSC{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     PardisoSymbolicSetup(phase,mat,solver)
 end
 
@@ -144,6 +165,10 @@ Returns a PardisoNumericalSetup from a given SparseMatrixCSC.
 function build_PardisoNumericalSetup(phase::Integer, 
                 mat::SparseMatrixCSC{T,Ti}, 
                 solver::PardisoSolver) where {T,Ti}
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     PardisoNumericalSetup(phase,mat,solver)
 end
 
@@ -155,6 +180,10 @@ Returns a PardisoSymbolicSetup from a given SparseMatrixCSR.
 function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::SparseMatrixCSR{Bi}, 
                 solver::PardisoSolver) where {Bi}
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
     PardisoSymbolicSetup(phase,mat,solver)
 end
@@ -167,6 +196,10 @@ Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
 function build_PardisoNumericalSetup(phase::Integer, 
                 mat::SparseMatrixCSR{Bi}, 
                 solver::PardisoSolver) where {Bi}
+    if !(solver.mtype in (MTYPE_REAL_STRUCTURALLY_SYMMETRIC,
+                          MTYPE_REAL_NON_SYMMETRIC))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
     PardisoNumericalSetup(phase,mat,solver)
 end
@@ -179,6 +212,10 @@ Returns a PardisoSymbolicSetup from a given SymSparseMatrixCSR.
 function build_PardisoSymbolicSetup(phase::Integer, 
                 mat::SymSparseMatrixCSR{Bi}, 
                 solver::PardisoSolver) where {Bi}
+    if !(solver.mtype in (MTYPE_REAL_SYMMETRIC_POSITIVE_DEFINITE,
+                          MTYPE_REAL_SYMMETRIC_INDEFINITE))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
     PardisoSymbolicSetup(phase,mat.uppertrian,solver)
 end
@@ -191,6 +228,10 @@ Returns a PardisoNumericalSetup from a given SparseMatrixCSR.
 function build_PardisoNumericalSetup(phase::Integer, 
                 mat::SymSparseMatrixCSR{Bi}, 
                 solver::PardisoSolver) where {Bi}
+    if !(solver.mtype in (MTYPE_REAL_SYMMETRIC_POSITIVE_DEFINITE,
+                          MTYPE_REAL_SYMMETRIC_INDEFINITE))
+        @warn "Pardiso matrix type ($(solver.mtype)) does not match with $(typeof(mat))."
+    end
     solver.iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = Bi == 0 ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
     PardisoNumericalSetup(phase,mat.uppertrian,solver)
 end

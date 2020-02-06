@@ -48,7 +48,7 @@ t_Ω = AffineFETerm(
 
 op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
 
-ls = PardisoSolver()
+ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)

@@ -3,6 +3,7 @@ module GridapPardiso
 using Libdl
 using SparseArrays
 using Gridap.Algebra
+using Gridap.FESpaces
 
 import Gridap.Algebra: LinearSolver
 import Gridap.Algebra: SymbolicSetup, NumericalSetup

@@ -29,7 +29,7 @@ t_Ω = AffineFETerm(
 
 # With non-symmetric storage
 
-op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
+op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},U,V,t_Ω)
 
 ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
@@ -45,7 +45,7 @@ r = A*x - b
 
 # With symmetric storage
 
-op = AffineFEOperator(SymSparseMatrixCSR{1,Float64,Int},V,U,t_Ω)
+op = AffineFEOperator(SymSparseMatrixCSR{1,Float64,Int},U,V,t_Ω)
 
 ls = PardisoSolver(op)
 solver = LinearFESolver(ls)

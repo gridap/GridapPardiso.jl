@@ -3,15 +3,12 @@ using Libdl
 MKL_FOUND = true
 
 function _find_gcclibdir()
-
   gcc_bin = Sys.which("gcc")
-
   if  "/usr/bin" == gcc_bin[1:8]
     return _find_gcclibdir_in_system()
   else
     return _find_gcclibdir_custom()
   end
-
 end
 
 function _find_gcclibdir_in_system()
@@ -37,7 +34,7 @@ function _find_gcclibdir_custom()
   gcc_root = gcc_bin[1:(end-8)]
   gcclibdir = joinpath(gcc_root,"lib64")
   if ! isdir(gcclibdir)
-    error("lib64 directory not gound in gcc instalation: $gcclibdir")
+    error("lib64 directory not found in GCC installation: $gcclibdir")
   end
   gcclibdir
 end
@@ -54,7 +51,7 @@ if !haskey(ENV,"MKLROOT")
   MKL_FOUND = false
   s = """
   Environment variable MKLROOT not found.
-  
+
   Please install intel mkl math library and rebuild.
   """
   @warn s
@@ -74,16 +71,20 @@ else
   @info "MKL libraries found at: $mkllibdir"
 end
 
-gcclibdir = _find_gcclibdir()
-
-if ! isdir(gcclibdir)
-  MKL_FOUND = false
-  s = """
-  gcc lib directory not found: $gcclibdir
-  """
-  @warn s
+gcclibdir = haskey(ENV,"GRIDAP_PARDISO_LIBGOMP_DIR") ? ENV["GRIDAP_PARDISO_LIBGOMP_DIR"] : ""
+if gcclibdir == ""
+  gcclibdir = _find_gcclibdir()
+  if ! isdir(gcclibdir)
+    MKL_FOUND = false
+    s = """
+    GCC lib directory not found: $gcclibdir
+    """
+    @warn s
+  else
+    @info "GCC libraries found at: $gcclibdir"
+  end
 else
-  @info "gcc libraries found at: $gcclibdir"
+  @info "Skipping search of GCC libraries, using the value of GRIDAP_PARDISO_LIBGOMP_DIR instead"
 end
 
 open(deps_jl,"w") do f
@@ -95,4 +96,3 @@ open(deps_jl,"w") do f
   println(f, :(const mkllibdir = $mkllibdir))
   println(f, :(const gcclibdir = $gcclibdir))
 end
-

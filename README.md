@@ -58,14 +58,15 @@ uh = solve(solver,op)
 
 **GridPardiso** itself is installed when you add and use it into another project.
 
-First, ensure that your system fulfill the requirements (see instructions below). Only after these steps, to include into your project form Julia REPL, use the following commands:
+First, ensure that your system fulfills the requirements (see instructions below). Only after these steps, to include into your project from the Julia REPL, use the following commands:
 
 ```
 pkg> add GridapPardiso
 julia> using GridapPardiso
 ```
 
-If, for any reason, you need to manually build the project (e.g., you added the project with the wrong environment resulting a build that fails, you have fixed the environment and want to re-build the project), write down the following commands in Julia REPL:
+If, for any reason, you need to manually build the project (e.g., you added the project with the wrong environment resulting in a build that fails, you have fixed the environment and want to re-build the project), write down the following commands in Julia REPL:
+
 ```
 pkg> add GridapPardiso
 pkg> build GridPardiso
@@ -74,26 +75,33 @@ julia> using GridapPardiso
 
 ### Requirements
 
-- `MKLROOT` environment variable must be set pointing to the MKL installation root directory.
-- `gcc` compiler must be installed and accessible in your system.
-- `OpenMP` library (`libgomp1` in linux OS) must be installed and accesible in your system.
+**GridapPardiso** requires the following software to be installed on your system:
 
-**GridapPardiso** relies on [Intel Pardiso MKL direct sparse solver](https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface). So, you need it in order to be able to use **GridPardiso**.
+1. Intel MKL library. In particular, **GridapPardiso** relies on the 
+   [Intel Pardiso MKL direct sparse solver](https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface).
+2. GNU C compiler (`gcc`) + GNU `OpenMP` library (`libgomp`). 
 
-[Intel MKL](https://software.intel.com/en-us/mkl) includes `/opt/intel/mkl/bin/mklvars.sh` script to setup the correct environment to use it. We strongly recommend to run this script as follows:
+In order to find 1., the build system of **GridapPardiso** relies on the `MKLROOT` environment variable. This variable must point to the MKL installation directory on your system. [Intel MKL](https://software.intel.com/en-us/mkl) includes the `mklvars.sh` Unix shell script in order to set up appropriately this environment variable. Assuming that `/opt/intel/mkl/` is the Intel MKL installation directory on your system, you have to run this script using the following command (most preferably in a script that is executed automatically when a new shell is opened):
 
 ```
 $ source /opt/intel/mkl/bin/mklvars.sh intel64
 ```
 
-This script setup the `MKLROOT` environment variable required by **GridapPardiso** to build it correctly.
+In order to find 2., there are two alternatives:
 
-In addition, please make sure that [OpenMP](https://www.openmp.org/) is installed. We use the default distribution package that is installed together with `GCC` compilers in Linux environments.
+* The user may optionally set the `GRIDAP_PARDISO_LIBGOMP_DIR` environment variable. This variable must contain the absolute path to the folder in which the `libgomp` dynamic library file resides on your system.
+* The build system tries to do its best to find `libgomp` on the system.
 
-To fullfil this requirements, in a debian-based OS, we recommend install the following packages:
+If `GRIDAP_PARDISO_LIBGOMP_DIR` is defined, then the build system follows the first alternative. If not, then it follows the second. Thus, the environment variable has precedence over the default behaviour of trying to find the library automatically.
+
+In general, the user may let the build system to find `libgomp` in the first place. If the build system fails, or it finds a version an undesired version of `libgomp`, then the environment variable can be used as a fallback solution, e.g., for those systems with a non-standard installation of `libgomp`, and/or several simultaneous installations of `libgomp`. 
+
+We note that, in Debian-based Linux OSs, the following commands can be installed in order to satisfy requirement 2. (typically executed as sudo):
 
 ```
 $ apt-get update
 $ apt-get install -y gcc libgomp1
 ```
+
+In such systems, the build system is able to automatically find `libgomp`.
 

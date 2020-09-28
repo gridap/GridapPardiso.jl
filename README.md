@@ -94,7 +94,7 @@ In order to find 2., there are two alternatives:
 
 If `GRIDAP_PARDISO_LIBGOMP_DIR` is defined, then the build system follows the first alternative. If not, then it follows the second. Thus, the environment variable has precedence over the default behaviour of trying to find the library automatically.
 
-In general, the user may let the build system to find `libgomp` in the first place. If the build system fails, or it finds a version an undesired version of `libgomp`, then the environment variable can be used as a fallback solution, e.g., for those systems with a non-standard installation of `libgomp`, and/or several simultaneous installations of `libgomp`. 
+In general, the user may let the build system to find `libgomp` in the first place. If the build system fails, or it finds an undesired version of `libgomp`, then the environment variable can be used as a fallback solution, e.g., for those systems with a non-standard installation of `libgomp`, and/or several simultaneous installations of `libgomp`. 
 
 We note that, in Debian-based Linux OSs, the following commands can be installed in order to satisfy requirement 2. (typically executed as sudo):
 

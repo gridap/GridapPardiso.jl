@@ -89,7 +89,7 @@ $ source /opt/intel/mkl/bin/mklvars.sh intel64
 
 In order to find 2., there are two alternatives:
 
-* The user may optionally set the `GRIDAP_PARDISO_LIBGOMP_DIR` environment variable. This variable must contain the absolute value to the folder in which the `libgomp` dynamic library file resides on your system.
+* The user may optionally set the `GRIDAP_PARDISO_LIBGOMP_DIR` environment variable. This variable must contain the absolute path to the folder in which the `libgomp` dynamic library file resides on your system.
 * The build system tries to do its best to find `libgomp` on the system.
 
 If `GRIDAP_PARDISO_LIBGOMP_DIR` is defined, then the build system follows the first alternative. If not, then it follows the second. Thus, the environment variable has precedence over the default behaviour of trying to find the library automatically.

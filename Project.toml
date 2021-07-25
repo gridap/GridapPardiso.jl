@@ -1,15 +1,16 @@
 name = "GridapPardiso"
 uuid = "34aa2546-dee6-11e9-014e-739fa02ec06f"
 authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Víctor Sande <vsande@cimne.upc.edu>"]
-version = "0.4.2"
+version = "0.5.0"
 
 [deps]
 Gridap = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+SparseMatricesCSR = "a0a7dd2c-ebf4-11e9-1f05-cf50bc540ca1"
 
 [compat]
-Gridap = "0.7, 0.8, 0.9, 0.10, 0.11, 0.12, 0.13, 0.14"
+Gridap = "0.15,0.16"
 julia = "1"
 
 [extras]

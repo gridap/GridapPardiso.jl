@@ -2,6 +2,7 @@ module GridapPardiso
 
 using Libdl
 using SparseArrays
+using SparseMatricesCSR
 using Gridap.Algebra
 using Gridap.FESpaces
 using Gridap.Helpers
@@ -48,7 +49,7 @@ const MKL_PARDISO_LOADED = Ref(false)
 
 function __init__()
 
-  if MKL_FOUND 
+  if MKL_FOUND
     libmkl = load_mkl_gcc(mkllibdir,gcclibdir)
 
     pardisoinit_sym[] = Libdl.dlsym(libmkl,:pardisoinit)
@@ -71,6 +72,20 @@ include("constructors.jl")
 include("bindings.jl")
 
 include("PardisoParameters.jl")
+
+getptr(S::SparseMatrixCSC) = S.colptr
+getptr(S::SparseMatrixCSR) = S.rowptr
+getptr(S::SymSparseMatrixCSR) = getptr(S.uppertrian)
+
+getindices(S::SymSparseMatrixCSR) = colvals(S)
+getindices(S::SparseMatrixCSC) = rowvals(S)
+getindices(S::SparseMatrixCSR) = colvals(S)
+
+hascolmajororder(::Type{<:SymSparseMatrixCSR}) = false
+hascolmajororder(a::SymSparseMatrixCSR) = hascolmajororder(SymSparseMatrixCSR)
+hascolmajororder(::Type{<:SparseMatrixCSC}) = true
+hascolmajororder(a::SparseMatrixCSC) = hascolmajororder(SparseMatrixCSC)
+hascolmajororder(a::SparseMatrixCSR) = false
 
 include("LinearSolver.jl")
 

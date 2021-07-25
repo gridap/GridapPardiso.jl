@@ -3,6 +3,7 @@ module FEMDriver
 using Test
 using Gridap
 using GridapPardiso
+using SparseMatricesCSR
 
 tol = 1e-10
 
@@ -14,29 +15,31 @@ domain = (0,1,0,1)
 partition = (3,3)
 model = CartesianDiscreteModel(domain,partition)
 
-V = TestFESpace(reffe=:Lagrangian, order=1, valuetype=Float64,
-  conformity=:H1, model=model, dirichlet_tags="boundary")
-
+order=1
+reffe = ReferenceFE(lagrangian,Float64,order)
+V = FESpace(model,
+            reffe,
+            conformity=:H1,
+            dirichlet_tags="boundary")
 U = TrialFESpace(V)
 
 trian = get_triangulation(model)
-quad = CellQuadrature(trian,2)
+dΩ    = Measure(trian,2)
 
-t_Ω = AffineFETerm(
-  (v,u) -> inner(∇(v),∇(u)),
-  (v) -> inner(v, (x) -> x[1]*x[2] ),
-  trian, quad)
+a(u,v)=∫(∇(v)⋅∇(u))dΩ
+f(x)=x[1]*x[2]
+l(v)=∫(v*f)dΩ
 
 # With non-symmetric storage
-
-op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},U,V,t_Ω)
+assem = SparseMatrixAssembler(SparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
+op = AffineFEOperator(a,l,U,V,assem)
 
 ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)
 
-x = get_free_values(uh)
+x = get_free_dof_values(uh)
 A = get_matrix(op)
 b = get_vector(op)
 
@@ -44,15 +47,15 @@ r = A*x - b
 @test maximum(abs.(r)) < tol
 
 # With symmetric storage
-
-op = AffineFEOperator(SymSparseMatrixCSR{1,Float64,Int},U,V,t_Ω)
+assem = SparseMatrixAssembler(SymSparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
+op = AffineFEOperator(a,l,U,V,assem)
 
 ls = PardisoSolver(op)
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)
 
-x = get_free_values(uh)
+x = get_free_dof_values(uh)
 A = get_matrix(op)
 b = get_vector(op)
 

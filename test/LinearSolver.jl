@@ -4,6 +4,8 @@ using Gridap.Algebra
 using GridapPardiso
 using Test
 using SparseArrays
+using SparseMatricesCSR
+
 
 tol = 1.0e-13
 
@@ -14,7 +16,7 @@ tol = 1.0e-13
 # Matrix from Intel MKL Pardiso examples
 #
 #        DATA ia /1,4,6,9,12,14/
-#        DATA ja 
+#        DATA ja
 #     1  /1,2,  4,
 #     2   1,2,
 #     3       3,4,5,
@@ -27,7 +29,7 @@ tol = 1.0e-13
 #     4   -4.d0,       2.d0, 7.d0,
 #     5          8.d0,            -5.d0/
 #####################################################
-I_ = [1,1,1,2,2,3,3,3,4,4,4,5,5] 
+I_ = [1,1,1,2,2,3,3,3,4,4,4,5,5]
 J_ = [1,2,4,1,2,3,4,5,1,3,4,2,5]
 V_ = [1,-1,-3,-2,5,4,6,4,-4,2,7,8,-5]
 rows = 5
@@ -74,7 +76,7 @@ end
 # Matrix from Intel MKL Pardiso examples
 #
 #        DATA ia /1,4,6,9,12,14/
-#        DATA ja 
+#        DATA ja
 #     1  /1,2,  4,
 #     2   1,2,
 #     3       3,4,5,
@@ -87,13 +89,13 @@ end
 #     4   -4.d0,       2.d0, 7.d0,
 #     5          8.d0,            -5.d0/
 #####################################################
-I_ = [1,1,1,2,2,3,3,3,4,4,4,5,5] 
+I_ = [1,1,1,2,2,3,3,3,4,4,4,5,5]
 J_ = [1,2,4,1,2,3,4,5,1,3,4,2,5]
 V_ = [1,-1,-3,-2,5,4,6,4,-4,2,7,8,-5]
 rows = 5
 cols = 5
 
-# pardiso! 
+# pardiso!
 
 for Bi in (0,1)
     I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
@@ -101,7 +103,7 @@ for Bi in (0,1)
         push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
     end
     finalize_coo!(SparseMatrixCSR,I,J,V,rows,cols)
-    A = sparsecsr(SparseMatrixCSR{Bi},I,J,V,rows,cols)
+    A = sparsecsr(Val{Bi}(),I,J,V,rows,cols)
     b = ones(size(A)[2])
     x = similar(b)
     ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
@@ -118,7 +120,7 @@ for Bi in (0,1)
             push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
         end
         finalize_coo!(SparseMatrixCSR,I,J,V,rows,cols)
-        A = sparsecsr(SparseMatrixCSR{Bi},I,J,V,rows,cols)
+        A = sparsecsr(Val{Bi}(),I,J,V,rows,cols)
         b = ones(size(A)[2])
         x = similar(b)
         ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
@@ -154,13 +156,13 @@ end
 #                                            11.d0,        &
 #                                                   5.d0 /)
 #####################################################
-I_ = [1,1,1,1,2,2,2,3,3,4,4,5,5,5,6,6,7,8] 
+I_ = [1,1,1,1,2,2,2,3,3,4,4,5,5,5,6,6,7,8]
 J_ = [1,3,6,7,2,3,5,3,8,4,7,5,6,7,6,8,7,8]
 V_ = [7,1,2,7,-4,8,2,1,5,7,9,5,1,5,-1,5,11,5]
 rows = 8
 cols = 8
 
-# pardiso! 
+# pardiso!
 
 for Bi in (0,1)
     I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Float64}()
@@ -168,7 +170,7 @@ for Bi in (0,1)
         push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
     end
     finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
-    A = symsparsecsr(SymSparseMatrixCSR{Bi},I,J,V,rows,cols)
+    A = symsparsecsr(Val{Bi}(),I,J,V,rows,cols)
     b = ones(size(A)[2])
     x = similar(b)
     ps = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)
@@ -185,7 +187,7 @@ for Bi in (0,1)
             push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
         end
         finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
-        A = symsparsecsr(SymSparseMatrixCSR{Bi},I,J,V,rows,cols)
+        A = symsparsecsr(Val{Bi}(),I,J,V,rows,cols)
         b = ones(size(A)[2])
         x = similar(b)
         ps = PardisoSolver(GridapPardiso.MTYPE_REAL_SYMMETRIC_INDEFINITE, new_iparm(A), GridapPardiso.MSGLVL_VERBOSE)

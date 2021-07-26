@@ -4,6 +4,8 @@ jobs:
   test:
     name: Tests ${{ matrix.version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
     runs-on: ${{ matrix.os }}
+    env:
+      MKL_ROOT: /opt/intel/mkl/
     strategy:
       fail-fast: false
       matrix:
@@ -36,7 +38,7 @@ jobs:
             ${{ runner.os }}-test-${{ env.cache-name }}-
             ${{ runner.os }}-test-
             ${{ runner.os }}-
-      - run:  if [ `getconf LONG_BIT` = "64" ];then source /opt/intel/mkl/bin/mklvars.sh intel64;else source /opt/intel/mkl/bin/mklvars.sh ia32; fi
+#     - run:  if [ `getconf LONG_BIT` = "64" ];then source /opt/intel/mkl/bin/mklvars.sh intel64;else source /opt/intel/mkl/bin/mklvars.sh ia32; fi
       - run:  ls -l /opt/intel/mkl/bin/
       - run:  env 
       - uses: julia-actions/julia-buildpkg@v1

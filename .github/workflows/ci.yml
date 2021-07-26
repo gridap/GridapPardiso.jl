@@ -49,6 +49,7 @@ jobs:
           file: lcov.info
 
   docs:
+    needs: test
     name: Documentation
     runs-on: ubuntu-latest
     steps:

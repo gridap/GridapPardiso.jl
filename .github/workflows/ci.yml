@@ -37,6 +37,8 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - run:  if [ `getconf LONG_BIT` = "64" ];then source /opt/intel/mkl/bin/mklvars.sh intel64;else source /opt/intel/mkl/bin/mklvars.sh ia32; fi
+      - run:  ls -l /opt/intel/mkl/bin/
+      - run:  env 
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1

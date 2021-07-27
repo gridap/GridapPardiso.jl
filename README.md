@@ -27,26 +27,30 @@ solve!(x, ns, b)
 ```julia
 using Gridap
 using GridapPardiso
+using SparseMatricesCSR
 
 # Define the FE problem
 # -Δu = x*y in (0,1)^3, u = 0 on the boundary.
 
 model = CartesianDiscreteModel((0,1,0,1,0,1), (10,10,10))
 
-V = TestFESpace(reffe=:Lagrangian, order=1, valuetype=Float64,
-  conformity=:H1, model=model, dirichlet_tags="boundary")
-
+order=1
+reffe = ReferenceFE(lagrangian,Float64,order)
+V = FESpace(model,
+            reffe,
+            conformity=:H1,
+            dirichlet_tags="boundary")
 U = TrialFESpace(V)
 
 trian = get_triangulation(model)
-quad = CellQuadrature(trian,2)
+dΩ    = Measure(trian,2)
 
-t_Ω = AffineFETerm(
-  (u,v) -> inner(∇(v),∇(u)),
-  (v) -> inner(v, (x) -> x[1]*x[2] ),
-  trian, quad)
+a(u,v)=∫(∇(v)⋅∇(u))dΩ
+f(x)=x[1]*x[2]
+l(v)=∫(v*f)dΩ
 
-op = AffineFEOperator(SparseMatrixCSR{1,Float64,Int},U,V,t_Ω)
+assem = SparseMatrixAssembler(SparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
+op = AffineFEOperator(a,l,U,V,assem)
 
 ls = PardisoSolver(op)
 solver = LinearFESolver(ls)

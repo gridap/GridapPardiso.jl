@@ -16,7 +16,7 @@ A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
 b = ones(A.n)
 x = similar(b)
 msglvl = 1
-ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(A), msglvl)
+ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(), msglvl)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)
@@ -52,7 +52,7 @@ l(v)=∫(v*f)dΩ
 assem = SparseMatrixAssembler(SparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
 op = AffineFEOperator(a,l,U,V,assem)
 
-ls = PardisoSolver(op)
+ls = PardisoSolver()
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)

@@ -34,7 +34,7 @@ l(v)=∫(v*f)dΩ
 assem = SparseMatrixAssembler(SparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
 op = AffineFEOperator(a,l,U,V,assem)
 
-ls = PardisoSolver(op)
+ls = PardisoSolver()
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)
@@ -50,7 +50,7 @@ r = A*x - b
 assem = SparseMatrixAssembler(SymSparseMatrixCSR{1,Float64,Int},Vector{Float64},U,V)
 op = AffineFEOperator(a,l,U,V,assem)
 
-ls = PardisoSolver(op)
+ls = PardisoSolver()
 solver = LinearFESolver(ls)
 
 uh = solve(solver,op)

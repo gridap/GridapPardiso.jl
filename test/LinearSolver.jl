@@ -69,6 +69,21 @@ if Int == Int64
     test_linear_solver(ps, A, b, x)
 end
 
+I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Complex{Float64}}()
+for (ik, jk, vk) in zip(I_,J_,V_)
+    push_coo!(SparseMatrixCSC,I,J,V,ik,jk,vk)
+end
+finalize_coo!(SparseMatrixCSC,I,J,V,rows, cols)
+A = sparse(I,J,V,rows,cols)
+b = ones(Complex{Float64},size(A)[2])
+x = similar(b)
+ps = PardisoSolver(msglvl=GridapPardiso.MSGLVL_VERBOSE)
+ss = symbolic_setup(ps, A)
+ns = numerical_setup(ss, A)
+solve!(x, ns, b)
+@test maximum(abs.(A*x-b)) < tol
+test_linear_solver(ps, A, b, x)
+
 #####################################################
 # SparseMatrixCSR
 #####################################################
@@ -130,6 +145,21 @@ for Bi in (0,1)
         @test maximum(abs.(A*x-b)) < tol
         test_linear_solver(ps, A, b, x)
     end
+
+    I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Complex{Float64}}()
+    for (ik, jk, vk) in zip(I_,J_,V_)
+        push_coo!(SparseMatrixCSR,I,J,V,ik,jk,vk)
+    end
+    finalize_coo!(SparseMatrixCSR,I,J,V,rows,cols)
+    A = sparsecsr(Val{Bi}(),I,J,V,rows,cols)
+    b = ones(Complex{Float64},size(A)[2])
+    x = similar(b)
+    ps = PardisoSolver(msglvl=GridapPardiso.MSGLVL_VERBOSE)
+    ss = symbolic_setup(ps, A)
+    ns = numerical_setup(ss, A)
+    solve!(x, ns, b)
+    @test maximum(abs.(A*x-b)) < tol
+    test_linear_solver(ps, A, b, x)
 end
 
 #####################################################
@@ -197,6 +227,22 @@ for Bi in (0,1)
         @test maximum(abs.(A*x-b)) < tol
         test_linear_solver(ps, A, b, x)
     end
+
+    I = Vector{Int32}(); J = Vector{Int32}(); V = Vector{Complex{Float64}}()
+    for (ik, jk, vk) in zip(I_,J_,V_)
+        push_coo!(SymSparseMatrixCSR,I,J,V,ik,jk,vk)
+    end
+    finalize_coo!(SymSparseMatrixCSR,I,J,V,rows,cols)
+    A = symsparsecsr(Val{Bi}(),I,J,V,rows,cols)
+    b = ones(Complex{Float64},size(A)[2])
+    x = similar(b)
+    ps = PardisoSolver(msglvl=GridapPardiso.MSGLVL_VERBOSE)
+    ss = symbolic_setup(ps, A)
+    ns = numerical_setup(ss, A)
+    solve!(x, ns, b)
+    @test maximum(abs.(A*x-b)) < tol
+    test_linear_solver(ps, A, b, x)
+
 end
 
 end

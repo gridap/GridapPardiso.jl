@@ -16,7 +16,7 @@ A = sparse([1,2,3,4,5],[1,2,3,4,5],[1.0,2.0,3.0,4.0,5.0])
 b = ones(A.n)
 x = similar(b)
 msglvl = 1
-ps = PardisoSolver(GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, new_iparm(), msglvl)
+ps = PardisoSolver(mtype=GridapPardiso.MTYPE_REAL_NON_SYMMETRIC, msglvl=msglvl)
 ss = symbolic_setup(ps, A)
 ns = numerical_setup(ss, A)
 solve!(x, ns, b)

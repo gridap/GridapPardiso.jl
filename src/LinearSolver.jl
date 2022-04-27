@@ -13,7 +13,7 @@ new_pardiso_handle() = zeros(Int, 64)
 new_iparm() = zeros(Int, 64)
 function new_iparm(mtype::Integer)
   pt = new_pardiso_handle()
-  iparm = new_iparm()
+  iparm = Vector{Int32}(new_iparm())
   pardisoinit!(pt,mtype,iparm)
   iparm
 end
@@ -103,7 +103,7 @@ end
 """
     function PardisoSolver(;
       mtype=MTYPE_UNKNOWN,
-      iparm=new_iparm(),
+      iparm=new_iparm(mtype),
       msglvl=MSGLVL_QUIET)
 
 PardisoSolver outer constructor via optional key-word arguments.

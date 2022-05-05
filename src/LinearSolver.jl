@@ -11,6 +11,12 @@ const MTYPE_UNKNOWN = 0
 
 new_pardiso_handle() = zeros(Int, 64)
 new_iparm() = zeros(Int, 64)
+function new_iparm(mtype::Integer)
+  pt = new_pardiso_handle()
+  iparm = Vector{Int32}(new_iparm())
+  pardisoinit!(pt,mtype,iparm)
+  iparm
+end
 
 getptr(S::SparseMatrixCSC) = S.colptr
 getptr(S::SparseMatrixCSR) = S.rowptr
@@ -97,14 +103,14 @@ end
 """
     function PardisoSolver(;
       mtype=MTYPE_UNKNOWN,
-      iparm=new_iparm(),
+      iparm=new_iparm(mtype),
       msglvl=MSGLVL_QUIET)
 
 PardisoSolver outer constructor via optional key-word arguments.
 """
 function PardisoSolver(;
       mtype=MTYPE_UNKNOWN,
-      iparm=new_iparm(),
+      iparm=new_iparm(mtype),
       msglvl=MSGLVL_QUIET)
 
   PardisoSolver(mtype,iparm,msglvl)
@@ -123,8 +129,8 @@ end
 function symbolic_setup(ps::PardisoSolver,mat::AbstractSparseMatrix{T,Ti}) where {T,Ti}
   pt = new_pardiso_handle()
   mtype = get_mtype(ps.mtype,mat)
-  pardisoinit!(pt,mtype,ps.iparm)
-  iparm = Vector{Ti}(ps.iparm)
+  #pardisoinit!(pt,mtype,ps.iparm) # Warning! This would overwrite iparm
+  iparm = Vector{Ti}(copy(ps.iparm))
   indexing = has_0_based_storage(mat) ? PARDISO_ZERO_BASED_INDEXING : PARDISO_ONE_BASED_INDEXING
   iparm[IPARM_ONE_OR_ZERO_BASED_INDEXING] = indexing
   msglvl = ps.msglvl

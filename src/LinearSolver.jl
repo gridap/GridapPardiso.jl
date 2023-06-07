@@ -201,7 +201,6 @@ function numerical_setup!(pns::PardisoNumericalSetup{T,Ti},mat::AbstractSparseMa
   iparm = pns.pss.iparm
   msglvl = pns.pss.msglvl
   pt = pns.pss.pt
-  mat = pns.pss.mat
   m,n = size(mat)
   phase = PHASE_NUMERICAL_FACTORIZATION
   f! = get_pardiso(Ti)

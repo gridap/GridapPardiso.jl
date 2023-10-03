@@ -81,11 +81,11 @@ julia> using GridapPardiso
 
 **GridapPardiso** requires the following software to be installed on your system:
 
-1. Intel MKL library. In particular, **GridapPardiso** relies on the 
-   [Intel Pardiso MKL direct sparse solver](https://software.intel.com/en-us/mkl-developer-reference-fortran-intel-mkl-pardiso-parallel-direct-sparse-solver-interface).
+1. Intel oneAPI MKL library. In particular, **GridapPardiso** relies on the 
+   [Intel Pardiso oneAPI MKL direct sparse solver](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html).
 2. GNU C compiler (`gcc`) + GNU `OpenMP` library (`libgomp`). 
 
-In order to find 1., the build system of **GridapPardiso** relies on the `MKLROOT` environment variable. This variable must point to the MKL installation directory on your system. [Intel MKL](https://software.intel.com/en-us/mkl) includes the `mklvars.sh` Unix shell script in order to set up appropriately this environment variable. Assuming that `/opt/intel/mkl/` is the Intel MKL installation directory on your system, you have to run this script using the following command (most preferably in a script that is executed automatically when a new shell is opened):
+In order to find 1., the build system of **GridapPardiso** relies on the `MKLROOT` environment variable. This variable must point to the MKL installation directory on your system. [Intel MKL]([https://software.intel.com/en-us/mkl](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html) includes the `mklvars.sh` Unix shell script in order to set up appropriately this environment variable. Assuming that `/opt/intel/mkl/` is the Intel MKL installation directory on your system, you have to run this script using the following command (most preferably in a script that is executed automatically when a new shell is opened):
 
 ```
 $ source /opt/intel/mkl/bin/mklvars.sh intel64

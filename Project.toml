@@ -1,7 +1,7 @@
 name = "GridapPardiso"
 uuid = "34aa2546-dee6-11e9-014e-739fa02ec06f"
 authors = ["Francesc Verdugo <fverdugo@cimne.upc.edu>", "Víctor Sande <vsande@cimne.upc.edu>"]
-version = "0.7.1"
+version = "0.7.0"
 
 [deps]
 Gridap = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
